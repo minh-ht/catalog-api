@@ -1,7 +1,7 @@
 from pydantic import BaseModel, constr, EmailStr, validator
 
 
-class UserAuth(BaseModel):
+class UserAuthenticationRequestSchema(BaseModel):
     email: EmailStr
     password: constr(min_length=6, max_length=50)
 
@@ -13,8 +13,6 @@ class UserAuth(BaseModel):
         contain_upper = False
         contain_lower = False
         contain_digit = False
-        if len(password_string) < 6:
-            raise ValueError(msg)
         for character in password_string:
             if character.isupper():
                 contain_upper = True
@@ -28,5 +26,5 @@ class UserAuth(BaseModel):
         return password_string
 
 
-class UserCreate(UserAuth):
+class UserCreationRequestSchema(UserAuthenticationRequestSchema):
     full_name: constr(min_length=1, max_length=50)

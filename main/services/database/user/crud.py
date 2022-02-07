@@ -1,26 +1,24 @@
-from datetime import datetime
 from typing import Optional
 
 from sqlalchemy.orm import Session
 
-from main.api.dependencies import auth
+from main.services.auth import generate_hashed_password
 from main.models.user import User
-from main.schemas.user import UserCreate
+from main.schemas.user import UserCreationRequestSchema
 
 
-def get_user_by_email(db: Session, email: str) -> Optional[User]:
-    user = db.query(User).filter_by(email=email).first()
+def get_user_by_email(session: Session, email: str) -> Optional[User]:
+    user = session.query(User).filter_by(email=email).one_or_none()
     return user
 
 
-def create_user(db: Session, user: UserCreate) -> None:
-    hashed_password = auth.get_hashed_password(user.password)
-    db_user = User(
+def create_user(session: Session, user: UserCreationRequestSchema) -> None:
+    hashed_password = generate_hashed_password(user.password)
+    user = User(
         email=user.email,
         full_name=user.full_name,
-        hashed_password=hashed_password,
-        created=datetime.now()
+        hashed_password=hashed_password
     )
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
+    session.add(user)
+    session.commit()
+    session.refresh(user)
