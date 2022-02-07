@@ -21,4 +21,3 @@ def create_user(session: Session, user: UserCreationRequestSchema) -> None:
     )
     session.add(user)
     session.commit()
-    session.refresh(user)
