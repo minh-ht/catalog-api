@@ -1,9 +1,9 @@
 from pydantic import constr
 
-from main.schemas.base_class import BaseClass
+from main.schemas.base import ORMEnabledBase
 
 
-class CategoryBase(BaseClass):
+class CategoryBase(ORMEnabledBase):
     name: constr(min_length=1, max_length=50)
 
 
