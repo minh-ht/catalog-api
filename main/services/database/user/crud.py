@@ -12,12 +12,11 @@ def get_user_by_email(session: Session, email: str) -> Optional[User]:
     return user
 
 
-def create_user(session: Session, user: UserCreationRequestSchema) -> None:
-    hashed_password = generate_hashed_password(user.password)
-    user = User(
-        email=user.email,
-        full_name=user.full_name,
-        hashed_password=hashed_password
+async def create_user(session: AsyncSession, email: str, hashed_password: str, full_name: str) -> UserModel:
+    user = UserModel(
+        email=email,
+        hashed_password=hashed_password,
+        full_name=full_name,
     )
     session.add(user)
     session.commit()
