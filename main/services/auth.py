@@ -20,7 +20,5 @@ def create_access_token(user_id: int) -> str:
     now = datetime.utcnow()
     expired_time = now + timedelta(settings.JWT_EXPIRED_MINUTES)
     payload = {"iat": now, "exp": expired_time, "sub": str(user_id)}
-    encoded_jwt = jwt.encode(payload,
-                             settings.JWT_SECRET_KEY,
-                             settings.ALGORITHM)
+    encoded_jwt = jwt.encode(payload, settings.JWT_SECRET_KEY, settings.JWT_ALGORITHM)
     return encoded_jwt
