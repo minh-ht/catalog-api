@@ -22,8 +22,8 @@ class UserAuthenticationRequestSchema(BaseModel):
                 contain_lower = True
             elif character.isdigit():
                 contain_digit = True
-        valid = contain_upper and contain_lower and contain_digit
-        if not valid:
+        is_password_valid = contain_upper and contain_lower and contain_digit
+        if not is_password_valid:
             raise ValueError(error_message)
         return password_string
 
