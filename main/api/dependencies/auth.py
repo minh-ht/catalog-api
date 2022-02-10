@@ -9,12 +9,10 @@ from main.config import settings
 from main.models.user import UserModel
 from main.services.user import get_user_by_id
 
-bearer = HTTPBearer(auto_error=False)
-
 
 async def require_authenticated_user(
     session: AsyncSession = Depends(get_database_session),
-    http_authorization_credentials: HTTPAuthorizationCredentials = Depends(bearer),
+    http_authorization_credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer(auto_error=False)),
 ) -> UserModel:
     credential_exception = HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User needs to authenticate")
     if http_authorization_credentials is None:
