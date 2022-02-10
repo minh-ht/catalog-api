@@ -15,17 +15,6 @@ from main.services.database.user import create_user, get_user_by_email
 router = APIRouter()
 
 
-async def authenticate_user(session: AsyncSession, user_login: UserAuthenticationRequestSchema) -> Optional[UserModel]:
-    user = await get_user_by_email(session, user_login.email)
-    if user is None:
-        return None
-
-    if not verify_password(user_login.password, user.hashed_password):
-        return None
-
-    return user
-
-
 @router.post("/")
 async def register(create_user_data: UserCreationRequestSchema, session: AsyncSession = Depends(get_database_session)):
     user = await get_user_by_email(session, create_user_data.email)
@@ -49,9 +38,16 @@ async def authenticate(
     user_authentication_data: UserAuthenticationRequestSchema,
     session: AsyncSession = Depends(get_database_session),
 ):
-    user = await authenticate_user(session, user_authentication_data)
+    authentication_error = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Invalid email or password",
+    )
+    user = await get_user_by_email(session, user_authentication_data.email)
     if user is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email or password")
+        raise authentication_error
+
+    if not verify_password(user_authentication_data.password, user.hashed_password):
+        raise authentication_error
 
     access_token = create_access_token(user.id)
     return JSONResponse(content={"access_token": access_token}, status_code=status.HTTP_200_OK)
