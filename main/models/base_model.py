@@ -5,10 +5,6 @@ from sqlalchemy.ext.declarative import declared_attr, declarative_base
 
 
 class Base:
-    @declared_attr
-    def __tablename__(cls):
-        return cls.__name__.lower()[:-5]
-
     id = Column(Integer, primary_key=True, index=True)
     created = Column(DateTime, default=datetime.now)
     updated = Column(DateTime)
