@@ -2,7 +2,7 @@ from fastapi import Depends, status
 from fastapi.exceptions import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from main.api.dependencies.get_database import get_database_session
+from main.api.dependencies.database import get_database_session
 from main.models.category import CategoryModel
 from main.services.database import category as category_service
 
