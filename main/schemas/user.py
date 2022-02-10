@@ -7,9 +7,11 @@ class UserAuthenticationRequestSchema(BaseModel):
 
     @validator("password")
     def password_validator(cls, password_string):
-        msg = "Password must have at least 6 characters, " \
-              "including at least one lowercase letter, " \
-              "one uppercase letter, one digit."
+        error_message = (
+            "Password must have at least 6 characters, "
+            "including at least one lowercase letter, "
+            "one uppercase letter, one digit."
+        )
         contain_upper = False
         contain_lower = False
         contain_digit = False
@@ -22,7 +24,7 @@ class UserAuthenticationRequestSchema(BaseModel):
                 contain_digit = True
         valid = contain_upper and contain_lower and contain_digit
         if not valid:
-            raise ValueError(msg)
+            raise ValueError(error_message)
         return password_string
 
 
