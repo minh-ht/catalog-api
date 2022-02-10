@@ -1,10 +1,10 @@
 from sqlalchemy import Column, Integer, ForeignKey, NVARCHAR, Text
 from sqlalchemy.orm import relationship
 
-from main.models.base_model import Base
+from main.models.base import BaseModel
 
 
-class CategoryModel(Base):
+class CategoryModel(BaseModel):
     __tablename__ = "category"
 
     name = Column(NVARCHAR(length=50), unique=True, nullable=False)

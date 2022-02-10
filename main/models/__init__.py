@@ -1,1 +1,1 @@
-from main.models import base_model, category, item, user
+from main.models import base, category, item, user
