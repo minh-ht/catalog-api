@@ -1,16 +1,13 @@
-from typing import Optional
-
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from main.api.dependencies.get_database import get_database_session
-from main.models.user import UserModel
 from main.schemas.auth import AccessToken
 from main.schemas.user import UserAuthenticationRequestSchema, UserCreationRequestSchema
 from main.services.auth import create_access_token, verify_password
 from main.services.auth import generate_hashed_password
-from main.services.database.user import create_user, get_user_by_email
+from main.services.user import create_user, get_user_by_email
 
 router = APIRouter()
 
