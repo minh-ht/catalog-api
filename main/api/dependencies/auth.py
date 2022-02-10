@@ -4,7 +4,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import JWTError, jwt
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from main.api.dependencies.get_database import get_database_session
+from main.api.dependencies.database import get_database_session
 from main.config import settings
 from main.models.user import UserModel
 from main.services.user import get_user_by_id
