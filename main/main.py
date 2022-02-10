@@ -20,14 +20,25 @@ async def creat_table():
 async def validation_exception_handler(request, exc):
     error_message = ""
 
-    for index in range(len(exc.errors())):
-        error_message += exc.errors()[index].get("msg")
-        if index < len(exc.errors()) - 1:
+    """
+    Get list of error in form of multiple lines,
+    each line represents an error that violates
+    the constraints.
+    """
+    for error in exc.errors():
+        error_message += error.get("msg")
+        if exc.errors().index(error) != len(exc.errors()) - 1:  # Not last element
             error_message += "\n"
 
-    return JSONResponse(content={"error_message": error_message}, status_code=status.HTTP_400_BAD_REQUEST)
+    return JSONResponse(
+        content={"error_message": error_message},
+        status_code=status.HTTP_400_BAD_REQUEST,
+    )
 
 
 @app.exception_handler(StarletteHTTPException)
 async def http_exception_handler(request, exc):
-    return JSONResponse(content={"error_message": exc.detail}, status_code=exc.status_code)
+    return JSONResponse(
+        content={"error_message": exc.detail},
+        status_code=exc.status_code,
+    )
