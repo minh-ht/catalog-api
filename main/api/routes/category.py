@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from main.api.dependencies.auth import require_authenticated_user, require_permission_on_category
 from main.api.dependencies.category import get_category_by_id
-from main.api.dependencies.get_database import get_database_session
+from main.api.dependencies.database import get_database_session
 from main.common.exception import NoEntityError
 from main.models.user import UserModel
 from main.schemas.category import CategoryBatchResponseSchema, CategoryCreationRequestSchema, CategoryResponseSchema
