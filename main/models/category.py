@@ -1,9 +1,12 @@
 from sqlalchemy import Column, Integer, ForeignKey, NVARCHAR, Text
+from sqlalchemy.orm import relationship
 
-from main.models.base_class import Base
+from main.models.base_model import Base
 
 
-class Category(Base):
+class CategoryModel(Base):
     name = Column(NVARCHAR(length=50), unique=True, nullable=False)
     description = Column(Text(length=5000))
     user_id = Column(Integer, ForeignKey("user.id"))
+
+    user = relationship("UserModel")
