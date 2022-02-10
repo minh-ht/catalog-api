@@ -4,7 +4,7 @@ from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from main.api.routes.router import api_router
-from main.services.database.session import create_table
+from main.services import session
 
 app = FastAPI()
 
@@ -12,8 +12,8 @@ app.include_router(api_router)
 
 
 @app.on_event("startup")
-async def clear_table():
-    await create_table()
+async def creat_table():
+    await session.create_table()
 
 
 @app.exception_handler(RequestValidationError)
