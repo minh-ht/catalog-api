@@ -34,12 +34,3 @@ async def require_authenticated_user(
         raise credential_exception
 
     return user
-
-
-async def require_permission_on_category(
-    user: UserModel = Depends(require_authenticated_user), category: CategoryModel = Depends(get_category_by_id)
-) -> None:
-    if category.user_id != user.id:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="User does not have permission to perform this action"
-        )
