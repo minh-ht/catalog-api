@@ -1,9 +1,9 @@
 from sqlalchemy import Column, VARCHAR, NVARCHAR
 
-from main.models.base import BaseModel
+from main.models.base import Base
 
 
-class UserModel(BaseModel):
+class UserModel(Base):
     __tablename__ = "user"
 
     full_name = Column(NVARCHAR(length=50), nullable=False)
