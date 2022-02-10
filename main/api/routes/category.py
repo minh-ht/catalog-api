@@ -11,7 +11,7 @@ from main.api.dependencies.database import get_database_session
 from main.common.exception import NoEntityError
 from main.models.user import UserModel
 from main.schemas.category import CategoryBatchResponseSchema, CategoryCreationRequestSchema, CategoryResponseSchema
-from main.services.database import category as category_service
+from main.services import category as category_service
 
 router = APIRouter()
 
