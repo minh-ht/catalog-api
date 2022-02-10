@@ -1,18 +1,10 @@
-from pydantic import BaseModel, constr, validator
+from pydantic import constr
+
+from main.schemas.base_class import BaseClass
 
 
-class CategoryBase(BaseModel):
-    name: constr(min_length=1)
-
-    @validator("name")
-    def name_validator(cls, name_string):
-        msg = "Category name exceeds max length (50)"
-        if len(name_string) > 50:
-            raise ValueError(msg)
-        return name_string
-
-    class Config:
-        orm_mode = True
+class CategoryBase(BaseClass):
+    name: constr(min_length=1, max_length=50)
 
 
 class CategoryBatchResponseSchema(CategoryBase):
@@ -20,14 +12,7 @@ class CategoryBatchResponseSchema(CategoryBase):
 
 
 class CategorySchema(CategoryBase):
-    description: constr(min_length=1)
-
-    @validator("description")
-    def name_validator(cls, description_string):
-        msg = "Category description exceeds max length (5000)"
-        if len(description_string) > 5000:
-            raise ValueError(msg)
-        return description_string
+    description: constr(min_length=1, max_length=5000)
 
 
 class CategoryCreationRequestSchema(CategorySchema):
