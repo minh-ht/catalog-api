@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from main.api.dependencies.database import get_database_session
 from main.models.category import CategoryModel
-from main.services.database import category as category_service
+from main.services import category as category_service
 
 
 async def get_category_by_id(category_id: int, session: AsyncSession = Depends(get_database_session)) -> CategoryModel:
