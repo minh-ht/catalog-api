@@ -2,8 +2,6 @@ from pydantic import BaseSettings
 
 
 class Settings(BaseSettings):
-    ITEMS_PER_PAGE: int = 20
-
     # Database config
     SQL_ALCHEMY_DATABASE_URL = "mysql+aiomysql://minhhoang:lighT023@localhost/catalog"
 
