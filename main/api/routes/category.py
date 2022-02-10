@@ -6,6 +6,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from main.api.dependencies.auth import require_authenticated_user, require_permission_on_category
+from main.api.dependencies.category import get_category_by_id
 from main.api.dependencies.get_database import get_database_session
 from main.common.exception import NoEntityError
 from main.models.user import UserModel
@@ -22,8 +23,7 @@ async def get_all_categories(session: AsyncSession = Depends(get_database_sessio
 
 
 @router.get("/{category_id}", response_model=CategoryResponseSchema, status_code=status.HTTP_200_OK)
-async def get_single_category(category_id: int, session: AsyncSession = Depends(get_database_session)):
-    category = await category_service.get_category_by_id(session, category_id)
+async def get_single_category(category: CategoryResponseSchema = Depends(get_category_by_id)):
     return category
 
 
