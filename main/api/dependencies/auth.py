@@ -4,12 +4,10 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import JWTError, jwt
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from main.api.dependencies.category import get_category_by_id
 from main.api.dependencies.get_database import get_database_session
 from main.config import settings
-from main.models.category import CategoryModel
 from main.models.user import UserModel
-from main.services.database.user import get_user_by_id
+from main.services.user import get_user_by_id
 
 bearer = HTTPBearer(auto_error=False)
 
