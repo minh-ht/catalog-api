@@ -10,5 +10,4 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine, clas
 
 async def create_table():
     async with engine.begin() as connection:
-        # await connection.run_sync(Base.metadata.drop_all)
         await connection.run_sync(Base.metadata.create_all)
