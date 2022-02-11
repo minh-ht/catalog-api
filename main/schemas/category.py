@@ -1,17 +1,17 @@
 from pydantic import constr
 
-from main.schemas.base import ORMEnabledBase
+from main.schemas.base import ORMBaseSchema
 
 
-class CategoryBase(ORMEnabledBase):
+class CategoryBaseSchema(ORMBaseSchema):
     name: constr(min_length=1, max_length=50)
 
 
-class CategoryBatchResponseSchema(CategoryBase):
+class CategoryBatchResponseSchema(CategoryBaseSchema):
     id: int
 
 
-class CategorySchema(CategoryBase):
+class CategorySchema(CategoryBaseSchema):
     description: constr(min_length=1, max_length=5000)
 
 
