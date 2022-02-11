@@ -18,7 +18,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 def create_access_token(user_id: int) -> str:
     now = datetime.utcnow()
-    expired_time = now + timedelta(settings.JWT_EXPIRED_MINUTES)
+    expired_time = now + timedelta(minutes=settings.JWT_EXPIRED_MINUTES)
     payload = {"iat": now, "exp": expired_time, "sub": str(user_id)}
     access_token = jwt.encode(payload, settings.JWT_SECRET_KEY, settings.JWT_ALGORITHM)
     return access_token
