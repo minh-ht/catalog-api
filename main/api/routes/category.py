@@ -1,14 +1,13 @@
 from typing import List
 
 from fastapi import APIRouter, Depends, status
-from fastapi.exceptions import HTTPException
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from main.api.dependencies.auth import require_authenticated_user, require_permission_on_category
 from main.api.dependencies.category import get_category_by_id
 from main.api.dependencies.database import get_database_session
-from main.common.exception import NoEntityError
+from main.common.exception import BadRequestException, NoEntityException
 from main.models.user import UserModel
 from main.schemas.category import CategoryBatchResponseSchema, CategoryCreationRequestSchema, CategoryResponseSchema
 from main.services import category as category_service
@@ -35,10 +34,7 @@ async def create_category(
 ):
     category = await category_service.get_category_by_name(session, create_category_data.name)
     if category:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Category name already exists",
-        )
+        raise BadRequestException("Category name already exists")
     await category_service.create_category(
         session=session,
         name=create_category_data.name,
@@ -52,9 +48,6 @@ async def create_category(
 async def delete_category(category_id, session: AsyncSession = Depends(get_database_session)):
     try:
         await category_service.delete_category(session, category_id)
-    except NoEntityError:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Cannot delete the specified category",
-        )
+    except NoEntityException:
+        raise BadRequestException("Cannot delete the specified category")
     return JSONResponse(content={}, status_code=status.HTTP_200_OK)
