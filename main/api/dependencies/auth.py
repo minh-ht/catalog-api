@@ -14,13 +14,13 @@ from main.services.user import get_user_by_id
 
 async def require_authenticated_user(
     session: AsyncSession = Depends(get_database_session),
-    http_authorization_credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer(auto_error=False)),
+    http_credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer(auto_error=False)),
 ) -> UserModel:
-    if http_authorization_credentials is None:
+    if http_credentials is None:
         raise UnauthorizedException()
 
     try:
-        token = http_authorization_credentials.credentials
+        token = http_credentials.credentials
         payload = jwt.decode(token, settings.JWT_SECRET_KEY, settings.JWT_ALGORITHM)
         user_id = int(payload.get("sub"))
     except JWTError:
