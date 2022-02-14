@@ -26,7 +26,11 @@ async def get_categories(session: AsyncSession) -> List[CategoryModel]:
 
 
 async def create_category(session: AsyncSession, name: str, description: str, user_id: int) -> CategoryModel:
-    category = CategoryModel(name=name, description=description, user_id=user_id)
+    category = CategoryModel(
+        name=name,
+        description=description,
+        user_id=user_id,
+    )
     session.add(category)
     await session.commit()
     return category

@@ -20,18 +20,27 @@ async def get_item_by_name(session: AsyncSession, name: str) -> Optional[ItemMod
 
 async def get_items(session: AsyncSession, category_id: int, items_per_page: int, page: int) -> List[ItemModel]:
     items_to_skip = (page - 1) * items_per_page
-    # fmt: off      turn off black formatter for this statement
+    # Config black not to format these block of codes
+    # fmt: off
     statement = (
-        select(ItemModel).where(ItemModel.category_id == category_id).offset(items_to_skip).limit(items_per_page)
+        select(ItemModel)
+        .where(ItemModel.category_id == category_id)
+        .offset(items_to_skip)
+        .limit(items_per_page)
     )
-    # fmt: on       turn on black formatter for the rest of the file
+    # fmt: on
     result = await session.execute(statement)
     items = result.scalars().all()
     return items
 
 
 async def create_item(session: AsyncSession, name: str, description: str, category_id: int, user_id: int) -> ItemModel:
-    item = ItemModel(name=name, description=description, category_id=category_id, user_id=user_id)
+    item = ItemModel(
+        name=name,
+        description=description,
+        category_id=category_id,
+        user_id=user_id,
+    )
     session.add(item)
     await session.commit()
     return item
