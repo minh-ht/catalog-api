@@ -5,9 +5,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from main.api.dependencies.category import require_category
 from main.api.dependencies.database import get_database_session
-from main.api.dependencies.item import require_item
 from main.api.exception import ForbiddenException, UnauthorizedException
 from main.models.category import CategoryModel
 from main.models.item import ItemModel
