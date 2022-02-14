@@ -8,7 +8,7 @@ from main.api.dependencies.auth import (
     require_authenticated_user,
     require_permission_on_item,
 )
-from main.api.dependencies.category import get_category_by_id
+from main.api.dependencies.category import require_category
 from main.api.dependencies.database import get_database_session
 from main.api.dependencies.item import require_item
 from main.api.exception import BadRequestException
@@ -29,7 +29,7 @@ router = APIRouter()
 async def create_item(
     create_item_data: ItemCreationRequestSchema,
     session: AsyncSession = Depends(get_database_session),
-    category: CategoryModel = Depends(get_category_by_id),
+    category: CategoryModel = Depends(require_category),
     user: UserModel = Depends(require_authenticated_user),
 ):
     item = await item_service.get_item_by_name(session, create_item_data.name)
@@ -54,7 +54,7 @@ async def get_single_item(item: ItemModel = Depends(require_item)):
 async def get_multiples_items(
     page: int = Query(1, gt=0),
     items_per_page: int = Query(20, gt=0),
-    category: CategoryModel = Depends(get_category_by_id),
+    category: CategoryModel = Depends(require_category),
     session: AsyncSession = Depends(get_database_session),
 ):
     items = await item_service.get_items(

@@ -8,7 +8,7 @@ from main.api.dependencies.auth import (
     require_authenticated_user,
     require_permission_on_category,
 )
-from main.api.dependencies.category import get_category_by_id
+from main.api.dependencies.category import require_category
 from main.api.dependencies.database import get_database_session
 from main.api.exception import BadRequestException
 from main.models.user import UserModel
@@ -29,7 +29,7 @@ async def get_all_categories(session: AsyncSession = Depends(get_database_sessio
 
 
 @router.get("/{category_id}", response_model=CategoryResponseSchema, status_code=status.HTTP_200_OK)
-async def get_single_category(category: CategoryResponseSchema = Depends(get_category_by_id)):
+async def get_single_category(category: CategoryResponseSchema = Depends(require_category)):
     return category
 
 

@@ -3,7 +3,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from main.api.dependencies.category import get_category_by_id
+from main.api.dependencies.category import require_category
 from main.api.dependencies.database import get_database_session
 from main.api.dependencies.item import require_item
 from main.api.exception import ForbiddenException, UnauthorizedException
@@ -37,7 +37,7 @@ async def require_authenticated_user(
 
 async def require_permission_on_category(
     user: UserModel = Depends(require_authenticated_user),
-    category: CategoryModel = Depends(get_category_by_id),
+    category: CategoryModel = Depends(require_category),
 ) -> None:
     if category.user_id != user.id:
         raise ForbiddenException("User does not have permission to perform this action")
