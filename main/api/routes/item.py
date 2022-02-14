@@ -34,7 +34,7 @@ async def create_item(
 ):
     item = await item_service.get_item_by_name(session, create_item_data.name)
     if item:
-        raise BadRequestException("Item name already exists")
+        raise BadRequestException("Item already exists")
     await item_service.create_item(
         session=session,
         name=create_item_data.name,
