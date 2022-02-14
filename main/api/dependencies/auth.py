@@ -9,6 +9,7 @@ from main.common.exception import ForbiddenException, UnauthorizedException
 from main.config import settings
 from main.models.category import CategoryModel
 from main.models.user import UserModel
+from main.services.auth import decode_access_token
 from main.services.user import get_user_by_id
 
 
@@ -20,9 +21,8 @@ async def require_authenticated_user(
         raise UnauthorizedException()
 
     try:
-        token = http_credentials.credentials
-        payload = jwt.decode(token, settings.JWT_SECRET_KEY, settings.JWT_ALGORITHM)
-        user_id = int(payload.get("sub"))
+        access_token = http_credentials.credentials
+        user_id = decode_access_token(access_token)
     except JWTError:
         raise UnauthorizedException()
 
