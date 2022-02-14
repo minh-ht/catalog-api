@@ -6,6 +6,8 @@ environment = os.getenv("ENVIRONMENT", "local")
 
 
 class Settings(BaseSettings):
+    ENVIRONMENT: str
+
     # Database config
     SQL_ALCHEMY_DATABASE_URL: str
 
