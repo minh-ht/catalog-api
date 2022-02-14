@@ -19,11 +19,9 @@ async def get_item_by_name(session: AsyncSession, name: str) -> Optional[ItemMod
 
 
 async def get_items(session: AsyncSession, category_id: int, items_per_page: int, page: int) -> List[ItemModel]:
+    items_to_skip = (page - 1) * items_per_page
     statement = (
-        select(ItemModel)
-        .where(ItemModel.category_id == category_id)
-        .offset((page - 1) * items_per_page)  # Index 1 -> 0
-        .limit(items_per_page)
+        select(ItemModel).where(ItemModel.category_id == category_id).offset(items_to_skip).limit(items_per_page)
     )
     result = await session.execute(statement)
     items = result.scalars().all()
