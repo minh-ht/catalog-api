@@ -1,13 +1,12 @@
 from fastapi import Depends
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from jose import JWTError, jwt
+from jose import JWTError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from main.api.dependencies.category import get_category_by_id
 from main.api.dependencies.database import get_database_session
 from main.api.dependencies.item import get_item_by_id
-from main.common.exception import ForbiddenException, UnauthorizedException
-from main.config import settings
+from main.api.exception import ForbiddenException, UnauthorizedException
 from main.models.category import CategoryModel
 from main.models.item import ItemModel
 from main.models.user import UserModel

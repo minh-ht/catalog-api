@@ -3,11 +3,14 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from main.api.dependencies.database import get_database_session
-from main.common.exception import BadRequestException, UnauthorizedException
+from main.api.exception import BadRequestException, UnauthorizedException
 from main.schemas.auth import AccessToken
 from main.schemas.user import UserAuthenticationRequestSchema, UserCreationRequestSchema
-from main.services.auth import create_access_token, verify_password
-from main.services.auth import generate_hashed_password
+from main.services.auth import (
+    create_access_token,
+    generate_hashed_password,
+    verify_password,
+)
 from main.services.user import create_user, get_user_by_email
 
 router = APIRouter()

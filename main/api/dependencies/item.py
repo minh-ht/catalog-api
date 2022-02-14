@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from main.api.dependencies.category import get_category_by_id
 from main.api.dependencies.database import get_database_session
-from main.common.exception import NotFoundException
+from main.api.exception import NotFoundException
 from main.models.category import CategoryModel
 from main.models.item import ItemModel
 from main.services import item as item_service

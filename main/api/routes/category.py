@@ -10,7 +10,7 @@ from main.api.dependencies.auth import (
 )
 from main.api.dependencies.category import get_category_by_id
 from main.api.dependencies.database import get_database_session
-from main.common.exception import BadRequestException
+from main.api.exception import BadRequestException
 from main.models.user import UserModel
 from main.schemas.category import (
     CategoryBatchResponseSchema,
