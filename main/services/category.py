@@ -3,7 +3,6 @@ from typing import List, Optional
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from main.common.exception import NoEntityException
 from main.models.category import CategoryModel
 
 
@@ -35,7 +34,5 @@ async def create_category(session: AsyncSession, name: str, description: str, us
 
 async def delete_category(session: AsyncSession, category_id: int) -> None:
     category = await session.get(CategoryModel, category_id)
-    if category is None:
-        raise NoEntityException()
     await session.delete(category)
     await session.commit()

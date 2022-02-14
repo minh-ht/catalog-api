@@ -3,7 +3,6 @@ from typing import List, Optional
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from main.common.exception import NoEntityException
 from main.models.item import ItemModel
 
 
@@ -40,8 +39,6 @@ async def create_item(session: AsyncSession, name: str, description: str, catego
 
 async def update_item(session: AsyncSession, item_id: int, description: str) -> None:
     item = await session.get(ItemModel, item_id)
-    if item is None:
-        raise NoEntityException
     statement = (
         update(ItemModel)
         .where(ItemModel.id == item.id)
@@ -54,7 +51,5 @@ async def update_item(session: AsyncSession, item_id: int, description: str) -> 
 
 async def delete_item(session: AsyncSession, item_id: int) -> None:
     item = await session.get(ItemModel, item_id)
-    if item is None:
-        raise NoEntityException
     await session.delete(item)
     await session.commit()

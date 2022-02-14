@@ -4,12 +4,19 @@ from fastapi import APIRouter, Depends, status
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from main.api.dependencies.auth import require_authenticated_user, require_permission_on_category
+from main.api.dependencies.auth import (
+    require_authenticated_user,
+    require_permission_on_category,
+)
 from main.api.dependencies.category import get_category_by_id
 from main.api.dependencies.database import get_database_session
-from main.common.exception import BadRequestException, NoEntityException
+from main.common.exception import BadRequestException
 from main.models.user import UserModel
-from main.schemas.category import CategoryBatchResponseSchema, CategoryCreationRequestSchema, CategoryResponseSchema
+from main.schemas.category import (
+    CategoryBatchResponseSchema,
+    CategoryCreationRequestSchema,
+    CategoryResponseSchema,
+)
 from main.services import category as category_service
 
 router = APIRouter()
@@ -46,8 +53,5 @@ async def create_category(
 
 @router.delete("/{category_id}", dependencies=[Depends(require_permission_on_category)])
 async def delete_category(category_id, session: AsyncSession = Depends(get_database_session)):
-    try:
-        await category_service.delete_category(session, category_id)
-    except NoEntityException:
-        raise BadRequestException("Cannot delete the specified category")
+    await category_service.delete_category(session, category_id)
     return JSONResponse(content={}, status_code=status.HTTP_200_OK)

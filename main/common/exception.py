@@ -2,10 +2,6 @@ from fastapi import status
 from fastapi.exceptions import HTTPException
 
 
-class NoEntityException(Exception):
-    error_message = "Cannot find requested entity"
-
-
 class BadRequestException(HTTPException):
     def __init__(self, error_message: str = "Bad request"):
         super().__init__(status_code=status.HTTP_400_BAD_REQUEST, detail=error_message)
