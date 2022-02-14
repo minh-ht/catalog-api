@@ -35,12 +35,12 @@ async def require_authenticated_user(
     return user
 
 
-def require_ownership(dependency) -> Callable:
-    def inner_work(
-        owned_object: Union[CategoryModel, ItemModel] = Depends(dependency),
+def require_ownership(require_object_function: Callable) -> Callable:
+    def verify_possession_owner(
+        possession: Union[CategoryModel, ItemModel] = Depends(require_object_function),
         user: UserModel = Depends(require_authenticated_user),
     ) -> None:
-        if owned_object.user_id != user.id:
+        if possession.user_id != user.id:
             raise ForbiddenException("User does not have permission to perform this action")
 
-    return inner_work
+    return verify_possession_owner
