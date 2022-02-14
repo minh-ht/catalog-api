@@ -1,3 +1,5 @@
+from typing import Callable, Union
+
 from fastapi import Depends
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError
@@ -35,17 +37,12 @@ async def require_authenticated_user(
     return user
 
 
-async def require_permission_on_category(
-    user: UserModel = Depends(require_authenticated_user),
-    category: CategoryModel = Depends(require_category),
-) -> None:
-    if category.user_id != user.id:
-        raise ForbiddenException("User does not have permission to perform this action")
+def require_ownership(dependency) -> Callable:
+    def inner_work(
+        owned_object: Union[CategoryModel, ItemModel] = Depends(dependency),
+        user: UserModel = Depends(require_authenticated_user),
+    ) -> None:
+        if owned_object.user_id != user.id:
+            raise ForbiddenException("User does not have permission to perform this action")
 
-
-async def require_permission_on_item(
-    user: UserModel = Depends(require_authenticated_user),
-    item: ItemModel = Depends(require_item),
-) -> None:
-    if item.user_id != user.id:
-        raise ForbiddenException("User does not have permission to perform this action")
+    return inner_work
