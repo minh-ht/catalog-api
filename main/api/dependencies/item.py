@@ -11,14 +11,11 @@ from main.models.item import ItemModel
 from main.services import item as item_service
 
 
-async def get_item_by_id(
-    item_id: Optional[int] = None,
+async def require_item(
+    item_id: int,
     category: CategoryModel = Depends(get_category_by_id),
     session: AsyncSession = Depends(get_database_session),
 ) -> Optional[ItemModel]:
-    if item_id is None:
-        return None
-
     item = await item_service.get_item_by_id(session, item_id)
     if item is None:
         raise NotFoundException("Cannot find the specified item")

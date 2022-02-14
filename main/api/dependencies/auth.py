@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from main.api.dependencies.category import get_category_by_id
 from main.api.dependencies.database import get_database_session
-from main.api.dependencies.item import get_item_by_id
+from main.api.dependencies.item import require_item
 from main.api.exception import ForbiddenException, UnauthorizedException
 from main.models.category import CategoryModel
 from main.models.item import ItemModel
@@ -45,7 +45,7 @@ async def require_permission_on_category(
 
 async def require_permission_on_item(
     user: UserModel = Depends(require_authenticated_user),
-    item: ItemModel = Depends(get_item_by_id),
+    item: ItemModel = Depends(require_item),
 ) -> None:
     if item.user_id != user.id:
         raise ForbiddenException("User does not have permission to perform this action")

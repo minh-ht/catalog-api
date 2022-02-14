@@ -10,7 +10,7 @@ from main.api.dependencies.auth import (
 )
 from main.api.dependencies.category import get_category_by_id
 from main.api.dependencies.database import get_database_session
-from main.api.dependencies.item import get_item_by_id
+from main.api.dependencies.item import require_item
 from main.api.exception import BadRequestException
 from main.models.category import CategoryModel
 from main.models.item import ItemModel
@@ -46,7 +46,7 @@ async def create_item(
 
 
 @router.get("/items/{item_id}", response_model=ItemResponseSchema)
-async def get_single_item(item: ItemModel = Depends(get_item_by_id)):
+async def get_single_item(item: ItemModel = Depends(require_item)):
     return item
 
 
@@ -69,7 +69,7 @@ async def get_multiples_items(
 @router.put("/items/{item_id}", response_model=ItemResponseSchema, dependencies=[Depends(require_permission_on_item)])
 async def update_item(
     item_update_data: ItemUpdateRequestSchema,
-    item: ItemModel = Depends(get_item_by_id),
+    item: ItemModel = Depends(require_item),
     session: AsyncSession = Depends(get_database_session),
 ):
     await item_service.update_item(session, item.id, item_update_data.description)
@@ -82,7 +82,7 @@ async def update_item(
     dependencies=[Depends(require_permission_on_item)],
 )
 async def delete_item(
-    item: ItemModel = Depends(get_item_by_id),
+    item: ItemModel = Depends(require_item),
     session: AsyncSession = Depends(get_database_session),
 ):
     await item_service.delete_item(session=session, item_id=item.id)
