@@ -24,7 +24,6 @@ def create_access_token(user_id: int) -> str:
     return access_token
 
 
-def decode_access_token(access_token: str) -> int:
+def decode_access_token(access_token: str) -> dict:
     payload = jwt.decode(access_token, settings.JWT_SECRET_KEY, settings.JWT_ALGORITHM)
-    user_id = int(payload.get("sub"))
-    return user_id
+    return payload

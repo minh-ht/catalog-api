@@ -22,10 +22,11 @@ async def require_authenticated_user(
 
     try:
         access_token = http_credentials.credentials
-        user_id = decode_access_token(access_token)
+        payload = decode_access_token(access_token)
     except JWTError:
         raise UnauthorizedException()
 
+    user_id = int(payload.get("sub"))
     user = await get_user_by_id(session, user_id)
     if user is None:
         raise UnauthorizedException()
