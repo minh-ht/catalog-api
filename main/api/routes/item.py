@@ -50,7 +50,7 @@ async def get_single_item(item: ItemModel = Depends(get_item_by_id)):
     return item
 
 
-@router.get("/items/", response_model=List[ItemResponseSchema], status_code=status.HTTP_200_OK)
+@router.get("/items", response_model=List[ItemResponseSchema], status_code=status.HTTP_200_OK)
 async def get_multiples_items(
     page: int = Query(1, gt=0),
     items_per_page: int = Query(20, gt=0),
