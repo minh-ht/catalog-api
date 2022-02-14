@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, ForeignKey, NVARCHAR, Text
+from sqlalchemy import NVARCHAR, Column, ForeignKey, Integer, Text
 from sqlalchemy.orm import relationship
 
 from main.models.base import Base
@@ -13,4 +13,4 @@ class ItemModel(Base):
     user_id = Column(Integer, ForeignKey("user.id"))
 
     user = relationship("UserModel")
-    category = relationship("CategoryModel")
+    category = relationship("CategoryModel", back_populates="items")

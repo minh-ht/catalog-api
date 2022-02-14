@@ -12,4 +12,4 @@ class CategoryModel(Base):
     user_id = Column(Integer, ForeignKey("user.id"))
 
     user = relationship("UserModel")
-    items = relationship("ItemModel", cascade="all, delete")
+    items = relationship("ItemModel", back_populates="category", cascade="all, delete")
