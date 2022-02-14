@@ -4,10 +4,7 @@ from fastapi import APIRouter, Depends, Query, status
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from main.api.dependencies.auth import (
-    require_authenticated_user,
-    require_permission_on_item,
-)
+from main.api.dependencies.auth import require_authenticated_user, require_ownership
 from main.api.dependencies.category import require_category
 from main.api.dependencies.database import get_database_session
 from main.api.dependencies.item import require_item
@@ -66,7 +63,7 @@ async def get_multiples_items(
     return items
 
 
-@router.put("/items/{item_id}", response_model=ItemResponseSchema, dependencies=[Depends(require_permission_on_item)])
+@router.put("/items/{item_id}", dependencies=[Depends(require_ownership(require_item))])
 async def update_item(
     item_update_data: ItemUpdateRequestSchema,
     item: ItemModel = Depends(require_item),
@@ -76,11 +73,7 @@ async def update_item(
     return JSONResponse(content={}, status_code=status.HTTP_200_OK)
 
 
-@router.delete(
-    "/items/{item_id}",
-    response_model=ItemResponseSchema,
-    dependencies=[Depends(require_permission_on_item)],
-)
+@router.delete("/items/{item_id}", dependencies=[Depends(require_ownership(require_item))])
 async def delete_item(
     item: ItemModel = Depends(require_item),
     session: AsyncSession = Depends(get_database_session),

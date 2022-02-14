@@ -4,10 +4,7 @@ from fastapi import APIRouter, Depends, status
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from main.api.dependencies.auth import (
-    require_authenticated_user,
-    require_permission_on_category,
-)
+from main.api.dependencies.auth import require_authenticated_user, require_ownership
 from main.api.dependencies.category import require_category
 from main.api.dependencies.database import get_database_session
 from main.api.exception import BadRequestException
@@ -51,7 +48,7 @@ async def create_category(
     return JSONResponse(content={}, status_code=status.HTTP_201_CREATED)
 
 
-@router.delete("/{category_id}", dependencies=[Depends(require_permission_on_category)])
+@router.delete("/{category_id}", dependencies=[Depends(require_ownership(require_category))])
 async def delete_category(category_id, session: AsyncSession = Depends(get_database_session)):
     await category_service.delete_category(session, category_id)
     return JSONResponse(content={}, status_code=status.HTTP_200_OK)
