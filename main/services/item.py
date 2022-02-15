@@ -18,15 +18,14 @@ async def get_item_by_name(session: AsyncSession, name: str) -> Optional[ItemMod
     return item
 
 
-async def get_items(session: AsyncSession, category_id: int, items_per_page: int, page: int) -> List[ItemModel]:
-    items_to_skip = (page - 1) * items_per_page
+async def get_items(session: AsyncSession, category_id: int, limit: int, offset: int) -> List[ItemModel]:
     # Config black not to format these block of codes
     # fmt: off
     statement = (
         select(ItemModel)
         .where(ItemModel.category_id == category_id)
-        .offset(items_to_skip)
-        .limit(items_per_page)
+        .offset(offset)
+        .limit(limit)
     )
     # fmt: on
     result = await session.execute(statement)
