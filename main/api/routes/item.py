@@ -54,11 +54,12 @@ async def get_multiples_items(
     category: CategoryModel = Depends(require_category),
     session: AsyncSession = Depends(get_database_session),
 ):
+    offset = (page - 1) * items_per_page
     items = await item_service.get_items(
         session=session,
         category_id=category.id,
-        page=page,
-        items_per_page=items_per_page,
+        limit=items_per_page,
+        offset=offset,
     )
     return items
 
