@@ -1,14 +1,23 @@
+import os
+
 from pydantic import BaseSettings
+
+environment = os.getenv("ENVIRONMENT", "local")
 
 
 class Settings(BaseSettings):
+    ENVIRONMENT: str
+
     # Database config
-    SQL_ALCHEMY_DATABASE_URL = "mysql+aiomysql://minhhoang:lighT023@localhost/catalog"
+    SQL_ALCHEMY_DATABASE_URL: str
 
     # Security config
-    JWT_SECRET_KEY = "4ca3722e7e3649a19fdea8c1ac2db5ebb7bb59b8d5c49a664329239d42f6acea"
-    JWT_ALGORITHM = "HS256"
-    JWT_EXPIRED_MINUTES = 30
+    JWT_SECRET_KEY: str
+    JWT_ALGORITHM: str
+    JWT_EXPIRED_MINUTES: int
+
+    class Config:
+        env_file = f"{environment}.env"
 
 
 settings = Settings()
