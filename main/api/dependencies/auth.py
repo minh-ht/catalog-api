@@ -35,9 +35,9 @@ async def require_authenticated_user(
     return user
 
 
-def require_ownership(require_object_function: Callable) -> Callable:
+def require_ownership(require_resource_dependency: Callable) -> Callable:
     def verify_ownership(
-        possession: Union[CategoryModel, ItemModel] = Depends(require_object_function),
+        possession: Union[CategoryModel, ItemModel] = Depends(require_resource_dependency),
         user: UserModel = Depends(require_authenticated_user),
     ) -> None:
         if possession.user_id != user.id:
