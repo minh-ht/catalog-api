@@ -18,6 +18,7 @@ async def create_table():
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request, exc):
+    # Get first error from validation errors list
     error_message = exc.errors()[0].get("msg")
 
     return JSONResponse(
