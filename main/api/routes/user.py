@@ -16,7 +16,7 @@ from main.services.user import create_user, get_user_by_email
 router = APIRouter()
 
 
-@router.post("/")
+@router.post("")
 async def register(create_user_data: UserCreationRequestSchema, session: AsyncSession = Depends(get_database_session)):
     user = await get_user_by_email(session, create_user_data.email)
     if user:
