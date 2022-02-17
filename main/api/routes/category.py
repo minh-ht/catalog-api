@@ -1,4 +1,4 @@
-from typing import List
+from typing import Dict, List, Union
 
 from fastapi import APIRouter, Depends, status
 from fastapi.responses import JSONResponse
@@ -8,6 +8,7 @@ from main.api.dependencies.auth import require_authenticated_user, require_owner
 from main.api.dependencies.category import require_category
 from main.api.dependencies.database import get_database_session
 from main.api.exception import BadRequestException
+from main.models.category import CategoryModel
 from main.models.user import UserModel
 from main.schemas.category import (
     CategoryBatchResponseSchema,
@@ -16,13 +17,16 @@ from main.schemas.category import (
 )
 from main.services import category as category_service
 
-router = APIRouter()
+router = APIRouter(prefix="/categories", tags=["categories"])
 
 
-@router.get("/", response_model=List[CategoryBatchResponseSchema], status_code=status.HTTP_200_OK)
+@router.get("", response_model=Dict[str, Union[int, List[CategoryBatchResponseSchema]]], status_code=status.HTTP_200_OK)
 async def get_all_categories(session: AsyncSession = Depends(get_database_session)):
     categories = await category_service.get_categories(session)
-    return categories
+    return {
+        "quantity": len(categories),
+        "categories": categories,
+    }
 
 
 @router.get("/{category_id}", response_model=CategoryResponseSchema, status_code=status.HTTP_200_OK)
@@ -30,7 +34,7 @@ async def get_single_category(category: CategoryResponseSchema = Depends(require
     return category
 
 
-@router.post("/")
+@router.post("")
 async def create_category(
     create_category_data: CategoryCreationRequestSchema,
     session: AsyncSession = Depends(get_database_session),
@@ -38,17 +42,20 @@ async def create_category(
 ):
     category = await category_service.get_category_by_name(session, create_category_data.name)
     if category:
-        raise BadRequestException("Category name already exists")
-    await category_service.create_category(
+        raise BadRequestException("Category already exists")
+    category = await category_service.create_category(
         session=session,
         name=create_category_data.name,
         description=create_category_data.description,
         user_id=user.id,
     )
-    return JSONResponse(content={}, status_code=status.HTTP_201_CREATED)
+    return JSONResponse(content={"id": category.id}, status_code=status.HTTP_201_CREATED)
 
 
 @router.delete("/{category_id}", dependencies=[Depends(require_ownership(require_category))])
-async def delete_category(category_id, session: AsyncSession = Depends(get_database_session)):
-    await category_service.delete_category(session, category_id)
+async def delete_category(
+    category: CategoryModel = Depends(require_category),
+    session: AsyncSession = Depends(get_database_session),
+):
+    await category_service.delete_category(session=session, category_id=category.id)
     return JSONResponse(content={}, status_code=status.HTTP_200_OK)

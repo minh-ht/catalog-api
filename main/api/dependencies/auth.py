@@ -27,7 +27,10 @@ async def require_authenticated_user(
     except JWTError:
         raise UnauthorizedException()
 
-    user_id = int(payload.get("sub"))
+    user_id = payload.get("sub")
+    if user_id is None:
+        raise UnauthorizedException()
+
     user = await get_user_by_id(session, user_id)
     if user is None:
         raise UnauthorizedException()
@@ -37,8 +40,8 @@ async def require_authenticated_user(
 
 def require_ownership(require_resource_dependency: Callable) -> Callable:
     def verify_ownership(
-        resource: Union[CategoryModel, ItemModel] = Depends(require_resource_dependency),
         user: UserModel = Depends(require_authenticated_user),
+        resource: Union[CategoryModel, ItemModel] = Depends(require_resource_dependency),
     ) -> None:
         if resource.user_id != user.id:
             raise ForbiddenException("User does not have permission to perform this action")

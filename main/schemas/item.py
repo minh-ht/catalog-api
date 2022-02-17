@@ -1,9 +1,9 @@
 from pydantic import constr
 
-from main.schemas.base import ORMBaseSchema
+from main.schemas.base import BaseSchema
 
 
-class ItemBaseSchema(ORMBaseSchema):
+class ItemBaseSchema(BaseSchema):
     description: constr(min_length=1, max_length=5000)
 
 

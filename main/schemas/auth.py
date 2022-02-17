@@ -1,5 +1,5 @@
-from pydantic import BaseModel
+from main.schemas.base import BaseSchema
 
 
-class AccessToken(BaseModel):
+class AccessToken(BaseSchema):
     access_token: str
