@@ -194,7 +194,7 @@ async def test_fail_to_register_user_with_existed_name(client: AsyncClient):
     assert response.json() == {"error_message": "This email is already registered"}
 
 
-async def test_user_register_successfully(client: AsyncClient):
+async def test_register_user_successfully(client: AsyncClient):
     response = await client.post(
         "/users",
         json={
@@ -241,6 +241,29 @@ async def test_fail_to_login_with_unregistered_email(client: AsyncClient):
         json={
             "email": "email0@example.com",
             "password": "String123",
+            "full_name": "Hoang Minh",
+        },
+    )
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+    assert response.json() == {"error_message": "Invalid email or password"}
+
+
+async def test_fail_to_login_with_wrong_password(client: AsyncClient):
+    # Register
+    await client.post(
+        "/users",
+        json={
+            "email": "email0@example.com",
+            "password": "String123",
+            "full_name": "Hoang Minh",
+        },
+    )
+    # Login
+    response = await client.post(
+        "/users/auth",
+        json={
+            "email": "email0@example.com",
+            "password": "String123___0",
             "full_name": "Hoang Minh",
         },
     )
