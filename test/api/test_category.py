@@ -6,7 +6,7 @@ from fastapi import status
 from httpx import AsyncClient
 
 
-async def test_fail_to_create_category_unauthenticated(client: AsyncClient):
+async def test_fail_to_create_category_without_authentication(client: AsyncClient):
     response = await client.post(
         "/categories",
         json={
@@ -106,7 +106,7 @@ async def test_fail_to_create_category_with_invalid_description(
     assert response.json() == expected_json_response
 
 
-async def test_fail_to_create_category_name_exists(client: AsyncClient, access_token: str):
+async def test_fail_to_create_category_with_existing_name(client: AsyncClient, access_token: str):
     category_data = {
         "name": "Car",
         "description": "Car has 4 wheels",
@@ -184,7 +184,7 @@ async def test_get_categories_successfully(client: AsyncClient, access_token: st
 )
 async def test_fail_to_get_single_category(
     client: AsyncClient,
-    create_category: None,
+    category_creation: None,
     category_id: Union[int, str],
     expected_status_code: int,
     expected_json_response: dict,
@@ -194,7 +194,7 @@ async def test_fail_to_get_single_category(
     assert response.json() == expected_json_response
 
 
-async def test_get_single_category_successfully(client: AsyncClient, create_category: None):
+async def test_get_single_category_successfully(client: AsyncClient, category_creation: None):
     response = await client.get("/categories/1")
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == {
@@ -203,16 +203,16 @@ async def test_get_single_category_successfully(client: AsyncClient, create_cate
     }
 
 
-async def test_fail_to_delete_category_unauthenticated(client: AsyncClient, create_category: None):
+async def test_fail_to_delete_category_without_authentication(client: AsyncClient, category_creation: None):
     response = await client.delete("/categories/1")
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
     assert response.json() == {"error_message": "User needs to authenticate"}
 
 
-async def test_fail_to_delete_category_not_owner(
+async def test_fail_to_delete_category_not_without_ownership(
     client: AsyncClient,
     access_token: str,
-    create_category: None,
+    category_creation: None,
     access_token_other_user: str,
 ):
     # Other user tries to delete category
@@ -224,10 +224,10 @@ async def test_fail_to_delete_category_not_owner(
     assert response.json() == {"error_message": "User does not have permission to perform this action"}
 
 
-async def test_fail_to_delete_category_not_found(
+async def test_fail_to_delete_category_with_non_existent_category(
     client: AsyncClient,
     access_token: str,
-    create_category: None,
+    category_creation: None,
 ):
     response = await client.delete(
         "/categories/10",
@@ -240,7 +240,7 @@ async def test_fail_to_delete_category_not_found(
 async def test_fail_to_delete_category_with_invalid_category_id(
     client: AsyncClient,
     access_token: str,
-    create_category: None,
+    category_creation: None,
 ):
     response = await client.delete(
         "/categories/a",
@@ -253,7 +253,7 @@ async def test_fail_to_delete_category_with_invalid_category_id(
 async def test_delete_category_successfully(
     client: AsyncClient,
     access_token: str,
-    create_category: None,
+    category_creation: None,
 ):
     response = await client.delete(
         "/categories/1",

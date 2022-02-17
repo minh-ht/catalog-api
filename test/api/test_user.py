@@ -2,7 +2,7 @@ import pytest
 from fastapi import status
 from httpx import AsyncClient
 
-test_case_invalid_email = [
+INVALID_EMAIL_CASES = [
     # Email has space
     (
         {
@@ -37,7 +37,7 @@ test_case_invalid_email = [
     ),
 ]
 
-test_case_invalid_password = [
+INVALID_PASSWORD_CASES = [
     # Password does not contain digit
     (
         {
@@ -102,22 +102,22 @@ test_case_invalid_password = [
 
 
 @pytest.mark.parametrize(
-    "user_authentication_info, expected_json_response",
-    test_case_invalid_email,
+    "user_credentials, expected_json_response",
+    INVALID_EMAIL_CASES,
 )
 async def test_fail_to_register_user_with_invalid_email(
     client: AsyncClient,
-    user_authentication_info: dict,
+    user_credentials: dict,
     expected_json_response: dict,
 ):
-    user_authentication_info.update({"full_name": "tester"})
-    response = await client.post("/users", json=user_authentication_info)
+    user_credentials.update({"full_name": "tester"})
+    response = await client.post("/users", json=user_credentials)
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.json() == expected_json_response
 
 
 @pytest.mark.parametrize(
-    "user_authentication_info, expected_json_response",
+    "user_credentials, expected_json_response",
     [
         # Full_name length exceeds 50 characters
         (
@@ -150,25 +150,25 @@ async def test_fail_to_register_user_with_invalid_email(
 )
 async def test_fail_to_register_user_with_invalid_full_name(
     client: AsyncClient,
-    user_authentication_info: dict,
+    user_credentials: dict,
     expected_json_response: dict,
 ):
-    response = await client.post("/users", json=user_authentication_info)
+    response = await client.post("/users", json=user_credentials)
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.json() == expected_json_response
 
 
 @pytest.mark.parametrize(
-    "user_authentication_info, expected_json_response",
-    test_case_invalid_password,
+    "user_credentials, expected_json_response",
+    INVALID_PASSWORD_CASES,
 )
 async def test_fail_to_register_user_with_invalid_password(
     client: AsyncClient,
-    user_authentication_info: dict,
+    user_credentials: dict,
     expected_json_response: dict,
 ):
-    user_authentication_info.update({"full_name": "tester"})
-    response = await client.post("/users", json=user_authentication_info)
+    user_credentials.update({"full_name": "tester"})
+    response = await client.post("/users", json=user_credentials)
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.json() == expected_json_response
 
@@ -208,29 +208,29 @@ async def test_register_user_successfully(client: AsyncClient):
 
 
 @pytest.mark.parametrize(
-    "user_authentication_info, expected_json_response",
-    test_case_invalid_email,
+    "user_credentials, expected_json_response",
+    INVALID_EMAIL_CASES,
 )
 async def test_fail_to_login_with_invalid_email(
     client: AsyncClient,
-    user_authentication_info: dict,
+    user_credentials: dict,
     expected_json_response: dict,
 ):
-    response = await client.post("/users/auth", json=user_authentication_info)
+    response = await client.post("/users/auth", json=user_credentials)
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.json() == expected_json_response
 
 
 @pytest.mark.parametrize(
-    "user_authentication_info, expected_json_response",
-    test_case_invalid_password,
+    "user_credentials, expected_json_response",
+    INVALID_PASSWORD_CASES,
 )
 async def test_fail_to_login_with_invalid_password(
     client: AsyncClient,
-    user_authentication_info: dict,
+    user_credentials: dict,
     expected_json_response: dict,
 ):
-    response = await client.post("/users/auth", json=user_authentication_info)
+    response = await client.post("/users/auth", json=user_credentials)
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.json() == expected_json_response
 

@@ -6,7 +6,7 @@ from fastapi import status
 from httpx import AsyncClient
 
 
-async def test_fail_to_create_item_unauthenticated(client: AsyncClient, create_item: None):
+async def test_fail_to_create_item_without_authentication(client: AsyncClient, item_creation: None):
     response = await client.post(
         "/categories/1/items",
         json={
@@ -50,7 +50,7 @@ async def test_fail_to_create_item_unauthenticated(client: AsyncClient, create_i
 async def test_fail_to_create_item_with_invalid_name(
     client: AsyncClient,
     access_token: str,
-    create_category: None,
+    category_creation: None,
     item_data: dict,
     expected_json_response: dict,
 ):
@@ -95,7 +95,7 @@ async def test_fail_to_create_item_with_invalid_name(
 async def test_fail_to_create_item_with_invalid_description(
     client: AsyncClient,
     access_token: str,
-    create_category: None,
+    category_creation: None,
     item_data: dict,
     expected_json_response: dict,
 ):
@@ -108,10 +108,10 @@ async def test_fail_to_create_item_with_invalid_description(
     assert response.json() == expected_json_response
 
 
-async def test_fail_to_create_item_with_existed_name(
+async def test_fail_to_create_item_with_existing_name(
     client: AsyncClient,
     access_token: str,
-    create_category: None,
+    category_creation: None,
 ):
     item_data = {
         "name": "Volvo",
@@ -134,7 +134,7 @@ async def test_fail_to_create_item_with_existed_name(
 async def test_create_item_successfully(
     client: AsyncClient,
     access_token: str,
-    create_category: None,
+    category_creation: None,
 ):
     response = await client.post(
         "/categories/1/items",
@@ -177,9 +177,9 @@ async def test_create_item_successfully(
         ),
     ],
 )
-async def test_fail_get_items_with_invalid_query_parameter(
+async def test_fail_get_items_with_invalid_query_parameters(
     client: AsyncClient,
-    create_many_items: None,
+    many_items_creation: None,
     page: int,
     items_per_page: int,
     expected_json_response: dict,
@@ -201,7 +201,7 @@ async def test_fail_get_items_with_invalid_query_parameter(
 )
 async def test_get_items_successfully(
     client: AsyncClient,
-    create_many_items: None,
+    many_items_creation: None,
     page: int,
     items_per_page: int,
     expected_json_response_list_length: dict,
@@ -211,7 +211,7 @@ async def test_get_items_successfully(
     assert len(response.json()) == expected_json_response_list_length
 
 
-async def test_get_items_successfully_with_default_value(client: AsyncClient, create_many_items: None):
+async def test_get_items_successfully_without_query_parameters(client: AsyncClient, many_items_creation: None):
     response = await client.get("/categories/1/items")
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()) == 20
@@ -236,7 +236,7 @@ async def test_get_items_successfully_with_default_value(client: AsyncClient, cr
 )
 async def test_fail_to_get_single_item(
     client: AsyncClient,
-    create_item: None,
+    item_creation: None,
     item_id: Union[int, str],
     expected_status_code: int,
     expected_json_response: dict,
@@ -246,16 +246,16 @@ async def test_fail_to_get_single_item(
     assert response.json() == expected_json_response
 
 
-async def test_get_single_item_successfully(client: AsyncClient, create_item: None):
+async def test_get_single_item_successfully(client: AsyncClient, item_creation: None):
     response = await client.get("/categories/1/items/1")
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == {"name": "Volvo", "description": "Volvo from Germany"}
 
 
-async def test_fail_to_update_item_unauthenticated(
+async def test_fail_to_update_item_without_authentication(
     client: AsyncClient,
     access_token: str,
-    create_item: None,
+    item_creation: None,
 ):
     response = await client.put(
         "/categories/1/items/1",
@@ -265,11 +265,11 @@ async def test_fail_to_update_item_unauthenticated(
     assert response.json() == {"error_message": "User needs to authenticate"}
 
 
-async def test_fail_to_update_item_not_owner(
+async def test_fail_to_update_item_without_ownership(
     client: AsyncClient,
     access_token: str,
     access_token_other_user: str,
-    create_item: None,
+    item_creation: None,
 ):
     # Other user tries to delete item
     response = await client.put(
@@ -281,10 +281,10 @@ async def test_fail_to_update_item_not_owner(
     assert response.json() == {"error_message": "User does not have permission to perform this action"}
 
 
-async def test_fail_to_update_item_not_found(
+async def test_fail_to_update_item_with_non_existent_item(
     client: AsyncClient,
     access_token: str,
-    create_item: None,
+    item_creation: None,
 ):
     response = await client.put(
         "/categories/1/items/10",
@@ -298,7 +298,7 @@ async def test_fail_to_update_item_not_found(
 async def test_fail_to_update_item_with_invalid_item_id(
     client: AsyncClient,
     access_token: str,
-    create_item: None,
+    item_creation: None,
 ):
     response = await client.put(
         "/categories/1/items/a",
@@ -312,7 +312,7 @@ async def test_fail_to_update_item_with_invalid_item_id(
 async def test_update_item_successfully(
     client: AsyncClient,
     access_token: str,
-    create_item: None,
+    item_creation: None,
 ):
     response = await client.put(
         "/categories/1/items/1",
@@ -323,21 +323,21 @@ async def test_update_item_successfully(
     assert response.json() == {}
 
 
-async def test_fail_to_delete_item_unauthenticated(
+async def test_fail_to_delete_item_without_authentication(
     client: AsyncClient,
     access_token: str,
-    create_item: None,
+    item_creation: None,
 ):
     response = await client.delete("/categories/1/items/1")
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
     assert response.json() == {"error_message": "User needs to authenticate"}
 
 
-async def test_fail_to_delete_item_not_owner(
+async def test_fail_to_delete_item_without_ownership(
     client: AsyncClient,
     access_token: str,
     access_token_other_user: str,
-    create_item: None,
+    item_creation: None,
 ):
     # Other user tries to delete item
     response = await client.delete(
@@ -348,10 +348,10 @@ async def test_fail_to_delete_item_not_owner(
     assert response.json() == {"error_message": "User does not have permission to perform this action"}
 
 
-async def test_fail_to_delete_item_not_found(
+async def test_fail_to_delete_item_with_non_existent_item(
     client: AsyncClient,
     access_token: str,
-    create_item: None,
+    item_creation: None,
 ):
     response = await client.delete(
         "/categories/1/items/10",
@@ -364,7 +364,7 @@ async def test_fail_to_delete_item_not_found(
 async def test_fail_to_delete_item_with_invalid_item_id(
     client: AsyncClient,
     access_token: str,
-    create_item: None,
+    item_creation: None,
 ):
     response = await client.delete(
         "/categories/1/items/a",
@@ -377,7 +377,7 @@ async def test_fail_to_delete_item_with_invalid_item_id(
 async def test_delete_item_successfully(
     client: AsyncClient,
     access_token: str,
-    create_item: None,
+    item_creation: None,
 ):
     response = await client.delete(
         "/categories/1/items/1",
