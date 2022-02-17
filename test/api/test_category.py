@@ -1,3 +1,4 @@
+from test.helpers import generate_authorization_header
 from typing import Union
 
 import pytest
@@ -54,7 +55,7 @@ async def test_fail_to_create_category_with_invalid_name(
 ):
     response = await client.post(
         "/categories",
-        headers={"Authorization": f"Bearer {access_token}"},
+        headers=generate_authorization_header(access_token),
         json=category_data,
     )
     assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -98,7 +99,7 @@ async def test_fail_to_create_category_with_invalid_description(
 ):
     response = await client.post(
         "/categories",
-        headers={"Authorization": f"Bearer {access_token}"},
+        headers=generate_authorization_header(access_token),
         json=category_data,
     )
     assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -112,12 +113,12 @@ async def test_fail_to_create_category_name_exists(client: AsyncClient, access_t
     }
     await client.post(
         "/categories",
-        headers={"Authorization": f"Bearer {access_token}"},
+        headers=generate_authorization_header(access_token),
         json=category_data,
     )
     response = await client.post(
         "/categories",
-        headers={"Authorization": f"Bearer {access_token}"},
+        headers=generate_authorization_header(access_token),
         json=category_data,
     )
     assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -127,7 +128,7 @@ async def test_fail_to_create_category_name_exists(client: AsyncClient, access_t
 async def test_create_category_successfully(client: AsyncClient, access_token: str):
     response = await client.post(
         "/categories",
-        headers={"Authorization": f"Bearer {access_token}"},
+        headers=generate_authorization_header(access_token),
         json={
             "name": "Car",
             "description": "Car has 4 wheels",
@@ -141,7 +142,7 @@ async def test_get_categories_successfully(client: AsyncClient, access_token: st
     # Create categories
     await client.post(
         "/categories",
-        headers={"Authorization": f"Bearer {access_token}"},
+        headers=generate_authorization_header(access_token),
         json={
             "name": "Car",
             "description": "Car has 4 wheels",
@@ -149,7 +150,7 @@ async def test_get_categories_successfully(client: AsyncClient, access_token: st
     )
     await client.post(
         "/categories",
-        headers={"Authorization": f"Bearer {access_token}"},
+        headers=generate_authorization_header(access_token),
         json={
             "name": "Bike",
             "description": "Bike has 2 wheels",
@@ -217,7 +218,7 @@ async def test_fail_to_delete_category_not_owner(
     # Other user tries to delete category
     response = await client.delete(
         "/categories/1",
-        headers={"Authorization": f"Bearer {access_token_other_user}"},
+        headers=generate_authorization_header(access_token_other_user),
     )
     assert response.status_code == status.HTTP_403_FORBIDDEN
     assert response.json() == {"error_message": "User does not have permission to perform this action"}
@@ -230,7 +231,7 @@ async def test_fail_to_delete_category_not_found(
 ):
     response = await client.delete(
         "/categories/10",
-        headers={"Authorization": f"Bearer {access_token}"},
+        headers=generate_authorization_header(access_token),
     )
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json() == {"error_message": "Cannot find the specified category"}
@@ -243,7 +244,7 @@ async def test_fail_to_delete_category_with_invalid_category_id(
 ):
     response = await client.delete(
         "/categories/a",
-        headers={"Authorization": f"Bearer {access_token}"},
+        headers=generate_authorization_header(access_token),
     )
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.json() == {"error_message": "value is not a valid integer"}
@@ -256,7 +257,7 @@ async def test_delete_category_successfully(
 ):
     response = await client.delete(
         "/categories/1",
-        headers={"Authorization": f"Bearer {access_token}"},
+        headers=generate_authorization_header(access_token),
     )
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == {}

@@ -1,3 +1,4 @@
+from test.helpers import generate_authorization_header
 from typing import Union
 
 import pytest
@@ -55,7 +56,7 @@ async def test_fail_to_create_item_with_invalid_name(
 ):
     response = await client.post(
         "/categories/1/items",
-        headers={"Authorization": f"Bearer {access_token}"},
+        headers=generate_authorization_header(access_token),
         json=item_data,
     )
     assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -100,7 +101,7 @@ async def test_fail_to_create_item_with_invalid_description(
 ):
     response = await client.post(
         "/categories/1/items",
-        headers={"Authorization": f"Bearer {access_token}"},
+        headers=generate_authorization_header(access_token),
         json=item_data,
     )
     assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -118,12 +119,12 @@ async def test_fail_to_create_item_with_existed_name(
     }
     await client.post(
         "/categories/1/items",
-        headers={"Authorization": f"Bearer {access_token}"},
+        headers=generate_authorization_header(access_token),
         json=item_data,
     )
     response = await client.post(
         "/categories/1/items",
-        headers={"Authorization": f"Bearer {access_token}"},
+        headers=generate_authorization_header(access_token),
         json=item_data,
     )
     assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -137,7 +138,7 @@ async def test_create_item_successfully(
 ):
     response = await client.post(
         "/categories/1/items",
-        headers={"Authorization": f"Bearer {access_token}"},
+        headers=generate_authorization_header(access_token),
         json={
             "name": "Volvo",
             "description": "Volvo from Germany",
@@ -270,7 +271,7 @@ async def test_fail_to_delete_item_not_owner(
     # Other user tries to delete item
     response = await client.delete(
         "/categories/1",
-        headers={"Authorization": f"Bearer {access_token_other_user}"},
+        headers=generate_authorization_header(access_token_other_user),
     )
     assert response.status_code == status.HTTP_403_FORBIDDEN
     assert response.json() == {"error_message": "User does not have permission to perform this action"}
@@ -283,7 +284,7 @@ async def test_fail_to_delete_item_not_found(
 ):
     response = await client.delete(
         "/categories/1/items/10",
-        headers={"Authorization": f"Bearer {access_token}"},
+        headers=generate_authorization_header(access_token),
     )
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json() == {"error_message": "Cannot find the specified item"}
@@ -296,7 +297,7 @@ async def test_fail_to_delete_item_with_invalid_item_id(
 ):
     response = await client.delete(
         "/categories/1/items/a",
-        headers={"Authorization": f"Bearer {access_token}"},
+        headers=generate_authorization_header(access_token),
     )
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.json() == {"error_message": "value is not a valid integer"}
@@ -309,7 +310,7 @@ async def test_delete_item_successfully(
 ):
     response = await client.delete(
         "/categories/1/items/1",
-        headers={"Authorization": f"Bearer {access_token}"},
+        headers=generate_authorization_header(access_token),
     )
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == {}
