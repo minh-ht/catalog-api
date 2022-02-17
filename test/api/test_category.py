@@ -62,7 +62,7 @@ async def test_fail_to_create_category_with_invalid_name(
 
 
 @pytest.mark.parametrize(
-    "category_data, expected_status_code, expected_json_response",
+    "category_data, expected_json_response",
     [
         # Description length is less than 1
         (

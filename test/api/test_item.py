@@ -18,7 +18,7 @@ async def test_fail_to_create_item_unauthenticated(client: AsyncClient, create_i
 
 
 @pytest.mark.parametrize(
-    "item_data, expected_status_code, expected_json_response",
+    "item_data, expected_json_response",
     [
         # Name length is less than 1
         (
@@ -63,7 +63,7 @@ async def test_fail_to_create_item_with_invalid_name(
 
 
 @pytest.mark.parametrize(
-    "item_data, expected_status_code, expected_json_response",
+    "item_data, expected_json_response",
     [
         # Description length is less than 1
         (
