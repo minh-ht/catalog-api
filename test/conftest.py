@@ -1,4 +1,5 @@
 import asyncio
+
 import pytest
 from httpx import AsyncClient
 
@@ -14,20 +15,20 @@ def event_loop():
 
 
 @pytest.fixture(scope="function", autouse=True)
-async def connection():
+async def connection() -> None:
     async with session.engine.begin() as connection:
         await connection.run_sync(session.Base.metadata.drop_all)
         await connection.run_sync(session.Base.metadata.create_all)
 
 
 @pytest.fixture()
-async def client():
+async def client() -> AsyncClient:
     async with AsyncClient(app=app, base_url="http://test") as test_client:
         yield test_client
 
 
 @pytest.fixture()
-async def access_token(client):
+async def access_token(client: AsyncClient) -> str:
     await client.post(
         "/users", json={"email": "email0@example.com", "password": "String123", "full_name": "Minh Hoang"}
     )
@@ -42,7 +43,7 @@ async def access_token(client):
 
 
 @pytest.fixture()
-async def access_token_other_user(client):
+async def access_token_other_user(client: AsyncClient) -> str:
     await client.post(
         "/users", json={"email": "email_other@example.com", "password": "String123", "full_name": "Minh Hoang"}
     )
@@ -57,7 +58,7 @@ async def access_token_other_user(client):
 
 
 @pytest.fixture()
-async def create_category(client, access_token):
+async def create_category(client: AsyncClient, access_token: str) -> None:
     await client.post(
         "/categories",
         headers={"Authorization": f"Bearer {access_token}"},
@@ -66,7 +67,11 @@ async def create_category(client, access_token):
 
 
 @pytest.fixture()
-async def create_item(client, access_token, create_category):
+async def create_item(
+    client: AsyncClient,
+    access_token: str,
+    create_category: None,
+) -> None:
     await client.post(
         "/categories/1/items",
         headers={"Authorization": f"Bearer {access_token}"},
@@ -78,8 +83,12 @@ async def create_item(client, access_token, create_category):
 
 
 @pytest.fixture()
-async def create_many_items(client, access_token, create_category):
-    # create 30 items to add to category
+async def create_many_items(
+    client: AsyncClient,
+    access_token: str,
+    create_category: None,
+):
+    # Create 30 items to add to category
     for time in range(30):
         await client.post(
             "/categories/1/items",

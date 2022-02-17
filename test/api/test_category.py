@@ -1,8 +1,11 @@
-from fastapi import status
+from typing import Union
+
 import pytest
+from fastapi import status
+from httpx import AsyncClient
 
 
-async def test_create_category_unauthenticated(client):
+async def test_fail_to_create_category_unauthenticated(client: AsyncClient):
     response = await client.post(
         "/categories",
         json={
@@ -15,73 +18,98 @@ async def test_create_category_unauthenticated(client):
 
 
 @pytest.mark.parametrize(
-    "category_data, expected_status_code, expected_json_response",
+    "category_data, expected_json_response",
     [
-        # name length is less than 1
+        # Name length is less than 1
         (
-            {"name": "", "description": "Car has 4 wheels"},
-            status.HTTP_400_BAD_REQUEST,
+            {
+                "name": "",
+                "description": "Car has 4 wheels",
+            },
             {"error_message": "ensure this value has at least 1 characters"},
         ),
-        # name length is greater than 50
+        # Name length is greater than 50
         (
-            {"name": "Carrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr", "description": "Car has 4 wheels"},
-            status.HTTP_400_BAD_REQUEST,
+            {
+                "name": "Car" + "r" * 50,
+                "description": "Car has 4 wheels",
+            },
+            {"error_message": "ensure this value has at most 50 characters"},
+        ),
+        # Name length is 51
+        (
+            {
+                "name": "C" * 51,
+                "description": "A lot of C",
+            },
             {"error_message": "ensure this value has at most 50 characters"},
         ),
     ],
 )
-async def test_create_category_invalid_name_length(
-    client,
-    access_token,
-    category_data,
-    expected_status_code,
-    expected_json_response,
+async def test_fail_to_create_category_with_invalid_name(
+    client: AsyncClient,
+    access_token: str,
+    category_data: dict,
+    expected_json_response: dict,
 ):
     response = await client.post(
         "/categories",
         headers={"Authorization": f"Bearer {access_token}"},
         json=category_data,
     )
-    assert response.status_code == expected_status_code
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.json() == expected_json_response
 
 
 @pytest.mark.parametrize(
     "category_data, expected_status_code, expected_json_response",
     [
-        # description length is less than 1
+        # Description length is less than 1
         (
-            {"name": "Car", "description": ""},
-            status.HTTP_400_BAD_REQUEST,
+            {
+                "name": "Car",
+                "description": "",
+            },
             {"error_message": "ensure this value has at least 1 characters"},
         ),
-        # description length is greater than 50
+        # Description length is greater than 50
         (
-            {"name": "Car", "description": "Car has 4 wheels" + "s" * 5000},
-            status.HTTP_400_BAD_REQUEST,
+            {
+                "name": "Car",
+                "description": "Car has 4 wheels" + "s" * 5000,
+            },
+            {"error_message": "ensure this value has at most 5000 characters"},
+        ),
+        # Description length is 5001
+        (
+            {
+                "name": "Car",
+                "description": "s" * 5001,
+            },
             {"error_message": "ensure this value has at most 5000 characters"},
         ),
     ],
 )
-async def test_create_category_invalid_description_length(
-    client,
-    access_token,
-    category_data,
-    expected_status_code,
-    expected_json_response,
+async def test_fail_to_create_category_with_invalid_description(
+    client: AsyncClient,
+    access_token: str,
+    category_data: dict,
+    expected_json_response: dict,
 ):
     response = await client.post(
         "/categories",
         headers={"Authorization": f"Bearer {access_token}"},
         json=category_data,
     )
-    assert response.status_code == expected_status_code
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.json() == expected_json_response
 
 
-async def test_create_category_name_exist(client, access_token):
-    category_data = {"name": "Car", "description": "Car has 4 wheels"}
+async def test_fail_to_create_category_name_exists(client: AsyncClient, access_token: str):
+    category_data = {
+        "name": "Car",
+        "description": "Car has 4 wheels",
+    }
     await client.post(
         "/categories",
         headers={"Authorization": f"Bearer {access_token}"},
@@ -96,44 +124,56 @@ async def test_create_category_name_exist(client, access_token):
     assert response.json() == {"error_message": "Category already exists"}
 
 
-async def test_create_category_successfully(client, access_token):
+async def test_create_category_successfully(client: AsyncClient, access_token: str):
     response = await client.post(
         "/categories",
         headers={"Authorization": f"Bearer {access_token}"},
-        json={"name": "Car", "description": "Car has 4 wheels"},
+        json={
+            "name": "Car",
+            "description": "Car has 4 wheels",
+        },
     )
     assert response.status_code == status.HTTP_201_CREATED
     assert response.json() == {}
 
 
-async def test_get_categories(client, access_token):
-    # create categories
+async def test_get_categories_successfully(client: AsyncClient, access_token: str):
+    # Create categories
     await client.post(
         "/categories",
         headers={"Authorization": f"Bearer {access_token}"},
-        json={"name": "Car", "description": "Car has 4 wheels"},
+        json={
+            "name": "Car",
+            "description": "Car has 4 wheels",
+        },
     )
     await client.post(
         "/categories",
         headers={"Authorization": f"Bearer {access_token}"},
-        json={"name": "Bike", "description": "Bike has 2 wheels"},
+        json={
+            "name": "Bike",
+            "description": "Bike has 2 wheels",
+        },
     )
-    # get categories
+    # Get categories
     response = await client.get("/categories")
     assert response.status_code == status.HTTP_200_OK
-    assert response.json() == [{"id": 1, "name": "Car"}, {"id": 2, "name": "Bike"}]
+    assert response.json() == [
+        {"id": 1, "name": "Car"},
+        {"id": 2, "name": "Bike"},
+    ]
 
 
 @pytest.mark.parametrize(
     "category_id, expected_status_code, expected_json_response",
     [
-        # category id is invalid
+        # Category id is invalid
         (
             "a",
             status.HTTP_400_BAD_REQUEST,
             {"error_message": "value is not a valid integer"},
         ),
-        # category id does not exist
+        # Category id does not exist
         (
             10,
             status.HTTP_404_NOT_FOUND,
@@ -141,28 +181,40 @@ async def test_get_categories(client, access_token):
         ),
     ],
 )
-async def test_get_single_category_unsuccessfully(
-    client, create_category, category_id, expected_status_code, expected_json_response
+async def test_fail_to_get_single_category(
+    client: AsyncClient,
+    create_category: None,
+    category_id: Union[int, str],
+    expected_status_code: int,
+    expected_json_response: dict,
 ):
     response = await client.get(f"/categories/{category_id}")
     assert response.status_code == expected_status_code
     assert response.json() == expected_json_response
 
 
-async def test_get_single_category_successfully(client, access_token, create_category):
+async def test_get_single_category_successfully(client: AsyncClient, create_category: None):
     response = await client.get("/categories/1")
     assert response.status_code == status.HTTP_200_OK
-    assert response.json() == {"name": "Car", "description": "Car has 4 wheels"}
+    assert response.json() == {
+        "name": "Car",
+        "description": "Car has 4 wheels",
+    }
 
 
-async def test_delete_category_unauthenticated(client, access_token, create_category):
+async def test_fail_to_delete_category_unauthenticated(client: AsyncClient, create_category: None):
     response = await client.delete("/categories/1")
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
     assert response.json() == {"error_message": "User needs to authenticate"}
 
 
-async def test_delete_category_not_owner(client, access_token, create_category, access_token_other_user):
-    # other user tries to delete category
+async def test_fail_to_delete_category_not_owner(
+    client: AsyncClient,
+    access_token: str,
+    create_category: None,
+    access_token_other_user: str,
+):
+    # Other user tries to delete category
     response = await client.delete(
         "/categories/1",
         headers={"Authorization": f"Bearer {access_token_other_user}"},
@@ -171,7 +223,11 @@ async def test_delete_category_not_owner(client, access_token, create_category, 
     assert response.json() == {"error_message": "User does not have permission to perform this action"}
 
 
-async def test_delete_category_not_found(client, access_token, create_category):
+async def test_fail_to_delete_category_not_found(
+    client: AsyncClient,
+    access_token: str,
+    create_category: None,
+):
     response = await client.delete(
         "/categories/10",
         headers={"Authorization": f"Bearer {access_token}"},
@@ -180,7 +236,11 @@ async def test_delete_category_not_found(client, access_token, create_category):
     assert response.json() == {"error_message": "Cannot find the specified category"}
 
 
-async def test_delete_category_invalid_category_id(client, access_token, create_category):
+async def test_fail_to_delete_category_invalid_category_id(
+    client: AsyncClient,
+    access_token: str,
+    create_category: None,
+):
     response = await client.delete(
         "/categories/a",
         headers={"Authorization": f"Bearer {access_token}"},
@@ -189,7 +249,11 @@ async def test_delete_category_invalid_category_id(client, access_token, create_
     assert response.json() == {"error_message": "value is not a valid integer"}
 
 
-async def test_delete_category_successfully(client, access_token, create_category):
+async def test_delete_category_successfully(
+    client: AsyncClient,
+    access_token: str,
+    create_category: None,
+):
     response = await client.delete(
         "/categories/1",
         headers={"Authorization": f"Bearer {access_token}"},
