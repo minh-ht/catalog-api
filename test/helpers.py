@@ -36,7 +36,7 @@ async def access_token_other_user(client: AsyncClient) -> str:
 
 
 @pytest.fixture
-async def create_category(client: AsyncClient, access_token: str) -> None:
+async def category_creation(client: AsyncClient, access_token: str) -> None:
     await client.post(
         "/categories",
         headers={"Authorization": f"Bearer {access_token}"},
@@ -45,10 +45,10 @@ async def create_category(client: AsyncClient, access_token: str) -> None:
 
 
 @pytest.fixture
-async def create_item(
+async def item_creation(
     client: AsyncClient,
     access_token: str,
-    create_category: None,
+    category_creation,
 ) -> None:
     await client.post(
         "/categories/1/items",
@@ -61,10 +61,10 @@ async def create_item(
 
 
 @pytest.fixture
-async def create_many_items(
+async def many_items_creation(
     client: AsyncClient,
     access_token: str,
-    create_category: None,
+    category_creation,
 ):
     # Create 30 items to add to category
     for time in range(30):
