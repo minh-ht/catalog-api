@@ -28,10 +28,10 @@ async def require_authenticated_user(
         raise UnauthorizedException()
 
     user_id = payload.get("sub")
-    if user_id is None:
+    if user_id is None or user_id == "":
         raise UnauthorizedException()
 
-    user = await get_user_by_id(session, user_id)
+    user = await get_user_by_id(session, int(user_id))
     if user is None:
         raise UnauthorizedException()
 
