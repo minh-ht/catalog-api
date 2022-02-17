@@ -147,6 +147,14 @@ async def test_create_item_successfully(
     assert response.status_code == status.HTTP_201_CREATED
     assert response.json() == {}
 
+    # Test if item is created on the server
+    response = await client.get("/categories/1/items/1")
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {
+        "name": "Volvo",
+        "description": "Volvo from Germany",
+    }
+
 
 @pytest.mark.parametrize(
     "page, items_per_page, expected_json_response",
@@ -322,6 +330,11 @@ async def test_update_item_successfully(
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == {}
 
+    # Test if item is updated
+    response = await client.get("/categories/1/items/1")
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json().get("description") == "new description"
+
 
 async def test_fail_to_delete_item_without_authentication(
     client: AsyncClient,
@@ -385,3 +398,8 @@ async def test_delete_item_successfully(
     )
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == {}
+
+    # Test if item is deleted
+    response = await client.delete("/categories/1/items/1")
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert response.json() == {"error_message": "Cannot find the specified item"}

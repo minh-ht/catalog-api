@@ -137,31 +137,32 @@ async def test_create_category_successfully(client: AsyncClient, access_token: s
     assert response.status_code == status.HTTP_201_CREATED
     assert response.json() == {}
 
+    # Test if category is created on the server
+    response = await client.get("/categories/1")
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {
+        "name": "Car",
+        "description": "Car has 4 wheels",
+    }
+
 
 async def test_get_categories_successfully(client: AsyncClient, access_token: str):
     # Create categories
-    await client.post(
-        "/categories",
-        headers=generate_authorization_header(access_token),
-        json={
-            "name": "Car",
-            "description": "Car has 4 wheels",
-        },
-    )
-    await client.post(
-        "/categories",
-        headers=generate_authorization_header(access_token),
-        json={
-            "name": "Bike",
-            "description": "Bike has 2 wheels",
-        },
-    )
+    for time in range(2):
+        await client.post(
+            "/categories",
+            headers=generate_authorization_header(access_token),
+            json={
+                "name": "Car " + str(time),
+                "description": "Car has 4 wheels",
+            },
+        )
     # Get categories
     response = await client.get("/categories")
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == [
-        {"id": 1, "name": "Car"},
-        {"id": 2, "name": "Bike"},
+        {"id": 1, "name": "Car 0"},
+        {"id": 2, "name": "Car 1"},
     ]
 
 
@@ -261,3 +262,8 @@ async def test_delete_category_successfully(
     )
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == {}
+
+    # Test if category is deleted on the server
+    response = await client.get("/categories/1")
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert response.json() == {"error_message": "Cannot find the specified category"}

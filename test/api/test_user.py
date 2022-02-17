@@ -206,6 +206,17 @@ async def test_register_user_successfully(client: AsyncClient):
     assert response.status_code == status.HTTP_201_CREATED
     assert response.json() == {}
 
+    # Test if user is registered on the server
+    response = await client.post(
+        "/users/auth",
+        json={
+            "email": "email0@example.com",
+            "password": "String123",
+        },
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert "access_token" in response.json()
+
 
 @pytest.mark.parametrize(
     "user_credentials, expected_json_response",
@@ -241,7 +252,6 @@ async def test_fail_to_login_with_unregistered_email(client: AsyncClient):
         json={
             "email": "email0@example.com",
             "password": "String123",
-            "full_name": "Hoang Minh",
         },
     )
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
@@ -264,7 +274,6 @@ async def test_fail_to_login_with_wrong_password(client: AsyncClient):
         json={
             "email": "email0@example.com",
             "password": "String123___0",
-            "full_name": "Hoang Minh",
         },
     )
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
@@ -287,7 +296,6 @@ async def test_login_successfully(client: AsyncClient):
         json={
             "email": "email0@example.com",
             "password": "String123",
-            "full_name": "Hoang Minh",
         },
     )
     assert response.status_code == status.HTTP_200_OK
