@@ -46,7 +46,7 @@ async def test_fail_to_create_item_unauthenticated(client: AsyncClient, create_i
         ),
     ],
 )
-async def test_fail_to_create_item_invalid_name(
+async def test_fail_to_create_item_with_invalid_name(
     client: AsyncClient,
     access_token: str,
     create_category: None,
@@ -91,7 +91,7 @@ async def test_fail_to_create_item_invalid_name(
         ),
     ],
 )
-async def test_fail_to_create_item_invalid_description(
+async def test_fail_to_create_item_with_invalid_description(
     client: AsyncClient,
     access_token: str,
     create_category: None,
@@ -107,7 +107,7 @@ async def test_fail_to_create_item_invalid_description(
     assert response.json() == expected_json_response
 
 
-async def test_fail_to_create_item_name_exists(
+async def test_fail_to_create_item_with_existed_name(
     client: AsyncClient,
     access_token: str,
     create_category: None,
@@ -176,7 +176,7 @@ async def test_create_item_successfully(
         ),
     ],
 )
-async def test_fail_get_items_invalid_query_parameter(
+async def test_fail_get_items_with_invalid_query_parameter(
     client: AsyncClient,
     create_many_items: None,
     page: int,
@@ -210,7 +210,7 @@ async def test_get_items_successfully(
     assert len(response.json()) == expected_json_response_list_length
 
 
-async def test_get_items_successfully_default_value(client: AsyncClient, create_many_items: None):
+async def test_get_items_successfully_with_default_value(client: AsyncClient, create_many_items: None):
     response = await client.get("/categories/1/items")
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()) == 20
@@ -289,7 +289,7 @@ async def test_fail_to_delete_item_not_found(
     assert response.json() == {"error_message": "Cannot find the specified item"}
 
 
-async def test_fail_to_delete_item_invalid_item_id(
+async def test_fail_to_delete_item_with_invalid_item_id(
     client: AsyncClient,
     access_token: str,
     create_item: None,

@@ -236,7 +236,7 @@ async def test_fail_to_delete_category_not_found(
     assert response.json() == {"error_message": "Cannot find the specified category"}
 
 
-async def test_fail_to_delete_category_invalid_category_id(
+async def test_fail_to_delete_category_with_invalid_category_id(
     client: AsyncClient,
     access_token: str,
     create_category: None,

@@ -105,7 +105,7 @@ test_case_invalid_password = [
     "user_authentication_info, expected_json_response",
     test_case_invalid_email,
 )
-async def test_fail_to_register_user_invalid_email(
+async def test_fail_to_register_user_with_invalid_email(
     client: AsyncClient,
     user_authentication_info: dict,
     expected_json_response: dict,
@@ -148,7 +148,7 @@ async def test_fail_to_register_user_invalid_email(
         ),
     ],
 )
-async def test_fail_to_register_user_invalid_full_name(
+async def test_fail_to_register_user_with_invalid_full_name(
     client: AsyncClient,
     user_authentication_info: dict,
     expected_json_response: dict,
@@ -162,7 +162,7 @@ async def test_fail_to_register_user_invalid_full_name(
     "user_authentication_info, expected_json_response",
     test_case_invalid_password,
 )
-async def test_fail_to_register_user_invalid_password(
+async def test_fail_to_register_user_with_invalid_password(
     client: AsyncClient,
     user_authentication_info: dict,
     expected_json_response: dict,
@@ -173,7 +173,7 @@ async def test_fail_to_register_user_invalid_password(
     assert response.json() == expected_json_response
 
 
-async def test_fail_to_register_user_email_exists(client: AsyncClient):
+async def test_fail_to_register_user_with_existed_name(client: AsyncClient):
     await client.post(
         "/users",
         json={
@@ -211,7 +211,7 @@ async def test_user_register_successfully(client: AsyncClient):
     "user_authentication_info, expected_json_response",
     test_case_invalid_email,
 )
-async def test_fail_to_login_invalid_email(
+async def test_fail_to_login_with_invalid_email(
     client: AsyncClient,
     user_authentication_info: dict,
     expected_json_response: dict,
@@ -225,7 +225,7 @@ async def test_fail_to_login_invalid_email(
     "user_authentication_info, expected_json_response",
     test_case_invalid_password,
 )
-async def test_fail_to_login_invalid_password(
+async def test_fail_to_login_with_invalid_password(
     client: AsyncClient,
     user_authentication_info: dict,
     expected_json_response: dict,
@@ -235,7 +235,7 @@ async def test_fail_to_login_invalid_password(
     assert response.json() == expected_json_response
 
 
-async def test_fail_to_login_unregistered_email(client: AsyncClient):
+async def test_fail_to_login_with_unregistered_email(client: AsyncClient):
     response = await client.post(
         "/users/auth",
         json={
