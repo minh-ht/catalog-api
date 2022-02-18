@@ -1,5 +1,3 @@
-from typing import Dict, List, Union
-
 from fastapi import APIRouter, Depends, Query, status
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -13,6 +11,7 @@ from main.models.category import CategoryModel
 from main.models.item import ItemModel
 from main.models.user import UserModel
 from main.schemas.item import (
+    ItemBatchResponseSchema,
     ItemCreationRequestSchema,
     ItemResponseSchema,
     ItemUpdateRequestSchema,
@@ -47,7 +46,7 @@ async def get_single_item(item: ItemModel = Depends(require_item)):
     return item
 
 
-@router.get("", response_model=Dict[str, Union[int, List[ItemResponseSchema]]], status_code=status.HTTP_200_OK)
+@router.get("", response_model=ItemBatchResponseSchema, status_code=status.HTTP_200_OK)
 async def get_multiples_items(
     page: int = Query(1, gt=0),
     items_per_page: int = Query(20, gt=0),
@@ -61,10 +60,13 @@ async def get_multiples_items(
         limit=items_per_page,
         offset=offset,
     )
-    return {
-        "quantity": len(items),
-        "categories": items,
-    }
+    total_number_of_items = await item_service.get_total_number_of_items_from_category(session, category.id)
+    response = ItemBatchResponseSchema(
+        total_number_of_items=total_number_of_items,
+        items_per_page=items_per_page,
+        items=items,
+    )
+    return response
 
 
 @router.put("/{item_id}", dependencies=[Depends(require_ownership(require_item))])
