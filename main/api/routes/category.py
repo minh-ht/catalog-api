@@ -1,4 +1,4 @@
-from typing import Dict, List, Union
+from typing import List
 
 from fastapi import APIRouter, Depends, status
 from fastapi.responses import JSONResponse
@@ -20,13 +20,10 @@ from main.services import category as category_service
 router = APIRouter()
 
 
-@router.get("", response_model=Dict[str, Union[int, List[CategoryBatchResponseSchema]]], status_code=status.HTTP_200_OK)
+@router.get("", response_model=List[CategoryBatchResponseSchema], status_code=status.HTTP_200_OK)
 async def get_all_categories(session: AsyncSession = Depends(get_database_session)):
     categories = await category_service.get_categories(session)
-    return {
-        "quantity": len(categories),
-        "categories": categories,
-    }
+    return categories
 
 
 @router.get("/{category_id}", response_model=CategoryResponseSchema, status_code=status.HTTP_200_OK)
