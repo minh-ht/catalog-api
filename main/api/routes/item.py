@@ -1,3 +1,5 @@
+from typing import Dict
+
 from fastapi import APIRouter, Depends, Query, status
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -21,7 +23,7 @@ from main.services import item as item_service
 router = APIRouter()
 
 
-@router.post("")
+@router.post("", response_model=Dict[str, int])
 async def create_item(
     create_item_data: ItemCreationRequestSchema,
     session: AsyncSession = Depends(get_database_session),
