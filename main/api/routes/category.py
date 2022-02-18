@@ -1,4 +1,4 @@
-from typing import List
+from typing import Dict, List
 
 from fastapi import APIRouter, Depends, status
 from fastapi.responses import JSONResponse
@@ -31,7 +31,7 @@ async def get_single_category(category: CategoryResponseSchema = Depends(require
     return category
 
 
-@router.post("")
+@router.post("", response_model=Dict[str, int])
 async def create_category(
     create_category_data: CategoryCreationRequestSchema,
     session: AsyncSession = Depends(get_database_session),
