@@ -19,7 +19,13 @@ async def get_item_by_name(session: AsyncSession, name: str) -> Optional[ItemMod
 
 
 async def get_total_number_of_items_from_category(session: AsyncSession, category_id: int) -> int:
-    statement = select(func.count()).select_from(ItemModel).where(ItemModel.category_id == category_id)
+    statement = (
+        select(func.count())
+        .select_from(
+            ItemModel,
+        )
+        .where(ItemModel.category_id == category_id)
+    )
     total_number_of_items = await session.scalar(statement)
     return total_number_of_items
 
