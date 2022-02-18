@@ -27,7 +27,7 @@ async def test_fail_to_create_category_without_authentication(client: AsyncClien
                 "name": "",
                 "description": "Car has 4 wheels",
             },
-            {"error_message": "ensure this value has at least 1 characters"},
+            {"error_message": "name: ensure this value has at least 1 characters"},
         ),
         # Name length is greater than 50
         (
@@ -35,7 +35,7 @@ async def test_fail_to_create_category_without_authentication(client: AsyncClien
                 "name": "Car" + "r" * 50,
                 "description": "Car has 4 wheels",
             },
-            {"error_message": "ensure this value has at most 50 characters"},
+            {"error_message": "name: ensure this value has at most 50 characters"},
         ),
         # Name length is 51
         (
@@ -43,7 +43,7 @@ async def test_fail_to_create_category_without_authentication(client: AsyncClien
                 "name": "C" * 51,
                 "description": "A lot of C",
             },
-            {"error_message": "ensure this value has at most 50 characters"},
+            {"error_message": "name: ensure this value has at most 50 characters"},
         ),
     ],
 )
@@ -71,7 +71,7 @@ async def test_fail_to_create_category_with_invalid_name(
                 "name": "Car",
                 "description": "",
             },
-            {"error_message": "ensure this value has at least 1 characters"},
+            {"error_message": "description: ensure this value has at least 1 characters"},
         ),
         # Description length is greater than 50
         (
@@ -79,7 +79,7 @@ async def test_fail_to_create_category_with_invalid_name(
                 "name": "Car",
                 "description": "Car has 4 wheels" + "s" * 5000,
             },
-            {"error_message": "ensure this value has at most 5000 characters"},
+            {"error_message": "description: ensure this value has at most 5000 characters"},
         ),
         # Description length is 5001
         (
@@ -87,7 +87,7 @@ async def test_fail_to_create_category_with_invalid_name(
                 "name": "Car",
                 "description": "s" * 5001,
             },
-            {"error_message": "ensure this value has at most 5000 characters"},
+            {"error_message": "description: ensure this value has at most 5000 characters"},
         ),
     ],
 )
@@ -135,7 +135,7 @@ async def test_create_category_successfully(client: AsyncClient, access_token: s
         },
     )
     assert response.status_code == status.HTTP_201_CREATED
-    assert response.json() == {}
+    assert response.json() == {"id": 1}
 
     # Test if category is created on the server
     response = await client.get("/categories/1")
@@ -173,7 +173,7 @@ async def test_get_categories_successfully(client: AsyncClient, access_token: st
         (
             "a",
             status.HTTP_400_BAD_REQUEST,
-            {"error_message": "value is not a valid integer"},
+            {"error_message": "category_id: value is not a valid integer"},
         ),
         # Category id does not exist
         (
@@ -248,7 +248,7 @@ async def test_fail_to_delete_category_with_invalid_category_id(
         headers=generate_authorization_header(access_token),
     )
     assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert response.json() == {"error_message": "value is not a valid integer"}
+    assert response.json() == {"error_message": "category_id: value is not a valid integer"}
 
 
 async def test_delete_category_successfully(

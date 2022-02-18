@@ -27,7 +27,7 @@ async def test_fail_to_create_item_without_authentication(client: AsyncClient, i
                 "name": "",
                 "description": "Volvo from Germany",
             },
-            {"error_message": "ensure this value has at least 1 characters"},
+            {"error_message": "name: ensure this value has at least 1 characters"},
         ),
         # Name length is greater than 50
         (
@@ -35,7 +35,7 @@ async def test_fail_to_create_item_without_authentication(client: AsyncClient, i
                 "name": "Volvo" + "o" * 50,
                 "description": "Volvo from Germany",
             },
-            {"error_message": "ensure this value has at most 50 characters"},
+            {"error_message": "name: ensure this value has at most 50 characters"},
         ),
         # Name length is 51
         (
@@ -43,7 +43,7 @@ async def test_fail_to_create_item_without_authentication(client: AsyncClient, i
                 "name": "V" * 51,
                 "description": "A lot of V",
             },
-            {"error_message": "ensure this value has at most 50 characters"},
+            {"error_message": "name: ensure this value has at most 50 characters"},
         ),
     ],
 )
@@ -72,7 +72,7 @@ async def test_fail_to_create_item_with_invalid_name(
                 "name": "Volvo",
                 "description": "",
             },
-            {"error_message": "ensure this value has at least 1 characters"},
+            {"error_message": "description: ensure this value has at least 1 characters"},
         ),
         # Description length is greater than 50
         (
@@ -80,7 +80,7 @@ async def test_fail_to_create_item_with_invalid_name(
                 "name": "Volvo",
                 "description": "Volvo from Germany" + "s" * 5000,
             },
-            {"error_message": "ensure this value has at most 5000 characters"},
+            {"error_message": "description: ensure this value has at most 5000 characters"},
         ),
         # Description length 5001
         (
@@ -88,7 +88,7 @@ async def test_fail_to_create_item_with_invalid_name(
                 "name": "Volvo",
                 "description": "V" * 5001,
             },
-            {"error_message": "ensure this value has at most 5000 characters"},
+            {"error_message": "description: ensure this value has at most 5000 characters"},
         ),
     ],
 )
@@ -145,7 +145,7 @@ async def test_create_item_successfully(
         },
     )
     assert response.status_code == status.HTTP_201_CREATED
-    assert response.json() == {}
+    assert response.json() == {"id": 1}
 
     # Test if item is created on the server
     response = await client.get("/categories/1/items/1")
@@ -163,25 +163,25 @@ async def test_create_item_successfully(
         (
             0,
             10,
-            {"error_message": "ensure this value is greater than 0"},
+            {"error_message": "page: ensure this value is greater than 0"},
         ),
         # Items_per_page is not greater than 0
         (
             1,
             0,
-            {"error_message": "ensure this value is greater than 0"},
+            {"error_message": "items_per_page: ensure this value is greater than 0"},
         ),
         # Page is not an integer
         (
             "a",
             10,
-            {"error_message": "value is not a valid integer"},
+            {"error_message": "page: value is not a valid integer"},
         ),
         # Items_per_page is not an integer
         (
             5,
             "a",
-            {"error_message": "value is not a valid integer"},
+            {"error_message": "items_per_page: value is not a valid integer"},
         ),
     ],
 )
@@ -216,13 +216,15 @@ async def test_get_items_successfully(
 ):
     response = await client.get(f"/categories/1/items?page={page}&items_per_page={items_per_page}")
     assert response.status_code == status.HTTP_200_OK
-    assert len(response.json()) == expected_json_response_list_length
+    assert response.json().get("total_number_of_items") == 30
+    assert response.json().get("items_per_page") == items_per_page
+    assert len(response.json().get("items")) == expected_json_response_list_length
 
 
 async def test_get_items_successfully_without_query_parameters(client: AsyncClient, list_items_creation: None):
     response = await client.get("/categories/1/items")
     assert response.status_code == status.HTTP_200_OK
-    assert len(response.json()) == 20
+    assert len(response.json().get("items")) == 20
 
 
 @pytest.mark.parametrize(
@@ -232,7 +234,7 @@ async def test_get_items_successfully_without_query_parameters(client: AsyncClie
         (
             "a",
             status.HTTP_400_BAD_REQUEST,
-            {"error_message": "value is not a valid integer"},
+            {"error_message": "item_id: value is not a valid integer"},
         ),
         # Item id does not exist
         (
@@ -314,7 +316,7 @@ async def test_fail_to_update_item_with_invalid_item_id(
         json={"description": "new description"},
     )
     assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert response.json() == {"error_message": "value is not a valid integer"}
+    assert response.json() == {"error_message": "item_id: value is not a valid integer"}
 
 
 async def test_update_item_successfully(
@@ -384,7 +386,7 @@ async def test_fail_to_delete_item_with_invalid_item_id(
         headers=generate_authorization_header(access_token),
     )
     assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert response.json() == {"error_message": "value is not a valid integer"}
+    assert response.json() == {"error_message": "item_id: value is not a valid integer"}
 
 
 async def test_delete_item_successfully(
@@ -400,6 +402,6 @@ async def test_delete_item_successfully(
     assert response.json() == {}
 
     # Test if item is deleted
-    response = await client.delete("/categories/1/items/1")
+    response = await client.get("/categories/1/items/1")
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json() == {"error_message": "Cannot find the specified item"}
