@@ -30,7 +30,7 @@ async def get_all_categories(session: AsyncSession = Depends(get_database_sessio
 async def get_single_category(category: CategoryResponseSchema = Depends(require_category)):
     return category
 
-  
+
 @router.post("", response_model=Dict[str, int])
 async def create_category(
     create_category_data: CategoryCreationRequestSchema,
