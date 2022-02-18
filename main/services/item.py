@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from sqlalchemy import select, update
+from sqlalchemy import func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from main.models.item import ItemModel
@@ -16,6 +16,12 @@ async def get_item_by_name(session: AsyncSession, name: str) -> Optional[ItemMod
     result = await session.execute(statement)
     item = result.scalar_one_or_none()
     return item
+
+
+async def get_total_number_of_items_from_category(session: AsyncSession, category_id: int) -> int:
+    statement = select(func.count()).select_from(ItemModel).where(ItemModel.category_id == category_id)
+    total_number_of_items = await session.scalar(statement)
+    return total_number_of_items
 
 
 async def get_items(session: AsyncSession, category_id: int, limit: int, offset: int) -> List[ItemModel]:
