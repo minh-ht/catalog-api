@@ -148,12 +148,12 @@ async def test_create_category_successfully(client: AsyncClient, access_token: s
 
 async def test_get_categories_successfully(client: AsyncClient, access_token: str):
     # Create categories
-    for time in range(2):
+    for name_postfix in range(2):
         await client.post(
             "/categories",
             headers=generate_authorization_header(access_token),
             json={
-                "name": "Car " + str(time),
+                "name": "Car " + str(name_postfix),
                 "description": "Car has 4 wheels",
             },
         )

@@ -48,11 +48,11 @@ async def category_creation(client: AsyncClient, access_token: str) -> None:
 async def item_creation(
     client: AsyncClient,
     access_token: str,
-    category_creation,
+    category_creation: None,
 ) -> None:
     await client.post(
         "/categories/1/items",
-        headers={"Authorization": f"Bearer {access_token}"},
+        headers=generate_authorization_header(access_token),
         json={
             "name": "Volvo",
             "description": "Volvo from Germany",
@@ -64,12 +64,12 @@ async def item_creation(
 async def list_items_creation(
     client: AsyncClient,
     access_token: str,
-    category_creation,
+    category_creation: None,
 ):
     # Create 30 items to add to category
-    for time in range(30):
+    for name_postfix in range(30):
         await client.post(
             "/categories/1/items",
-            headers={"Authorization": f"Bearer {access_token}"},
-            json={"name": "Volvo" + str(time), "description": "Volvo from Germany"},
+            headers=generate_authorization_header(access_token),
+            json={"name": "Volvo" + str(name_postfix), "description": "Volvo from Germany"},
         )
