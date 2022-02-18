@@ -18,8 +18,17 @@ async def create_table():
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request, exc):
-    # Get first error from validation errors list
-    error_message = exc.errors()[0].get("msg")
+    error_message = ""
+
+    """
+    Get list of error in form of multiple lines,
+    each line represents an error that violates
+    the constraints.
+    """
+    for error in exc.errors():
+        error_message += f"{error.get('loc')[1]}: {error.get('msg')}"  # "{location}: {error message}"
+        if exc.errors().index(error) != len(exc.errors()) - 1:  # Not last element
+            error_message += "\n"
 
     return JSONResponse(
         content={"error_message": error_message},

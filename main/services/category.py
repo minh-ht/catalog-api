@@ -33,6 +33,7 @@ async def create_category(session: AsyncSession, name: str, description: str, us
     )
     session.add(category)
     await session.commit()
+    await session.refresh(category)
     return category
 
 

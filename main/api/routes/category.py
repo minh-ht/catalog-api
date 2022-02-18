@@ -1,4 +1,4 @@
-from typing import List
+from typing import Dict, List
 
 from fastapi import APIRouter, Depends, status
 from fastapi.responses import JSONResponse
@@ -31,7 +31,7 @@ async def get_single_category(category: CategoryResponseSchema = Depends(require
     return category
 
 
-@router.post("")
+@router.post("", response_model=Dict[str, int])
 async def create_category(
     create_category_data: CategoryCreationRequestSchema,
     session: AsyncSession = Depends(get_database_session),
@@ -40,18 +40,18 @@ async def create_category(
     category = await category_service.get_category_by_name(session, create_category_data.name)
     if category:
         raise BadRequestException("Category already exists")
-    await category_service.create_category(
+    category = await category_service.create_category(
         session=session,
         name=create_category_data.name,
         description=create_category_data.description,
         user_id=user.id,
     )
-    return JSONResponse(content={}, status_code=status.HTTP_201_CREATED)
+    return JSONResponse(content={"id": category.id}, status_code=status.HTTP_201_CREATED)
 
 
-@router.delete("/{category_id}", dependencies=[Depends(require_ownership(require_category))])
+@router.delete("/{category_id}")
 async def delete_category(
-    category: CategoryModel = Depends(require_category),
+    category: CategoryModel = Depends(require_ownership(require_category)),
     session: AsyncSession = Depends(get_database_session),
 ):
     await category_service.delete_category(session=session, category_id=category.id)

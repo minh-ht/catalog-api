@@ -2,7 +2,7 @@ from typing import Callable, Union
 
 from fastapi import Depends
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from jose import JWTError
+from jwt import PyJWTError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from main.api.dependencies.database import get_database_session
@@ -24,10 +24,13 @@ async def require_authenticated_user(
     try:
         access_token = http_credentials.credentials
         payload = decode_access_token(access_token)
-    except JWTError:
+    except PyJWTError:
         raise UnauthorizedException()
 
-    user_id = int(payload.get("sub"))
+    user_id = payload.get("sub")
+    if user_id is None:
+        raise UnauthorizedException()
+
     user = await get_user_by_id(session, user_id)
     if user is None:
         raise UnauthorizedException()
@@ -37,10 +40,11 @@ async def require_authenticated_user(
 
 def require_ownership(require_resource_dependency: Callable) -> Callable:
     def verify_ownership(
-        resource: Union[CategoryModel, ItemModel] = Depends(require_resource_dependency),
         user: UserModel = Depends(require_authenticated_user),
-    ) -> None:
+        resource: Union[CategoryModel, ItemModel] = Depends(require_resource_dependency),
+    ) -> Union[CategoryModel, ItemModel]:
         if resource.user_id != user.id:
             raise ForbiddenException("User does not have permission to perform this action")
+        return resource
 
     return verify_ownership

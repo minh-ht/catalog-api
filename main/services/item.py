@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from sqlalchemy import select, update
+from sqlalchemy import func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from main.models.item import ItemModel
@@ -18,22 +18,39 @@ async def get_item_by_name(session: AsyncSession, name: str) -> Optional[ItemMod
     return item
 
 
+async def get_total_number_of_items_of_category(session: AsyncSession, category_id: int) -> int:
+    statement = (
+        select(func.count())
+        .select_from(
+            ItemModel,
+        )
+        .where(ItemModel.category_id == category_id)
+    )
+    total_number_of_items = await session.scalar(statement)
+    return total_number_of_items
+
+
 async def get_items(session: AsyncSession, category_id: int, limit: int, offset: int) -> List[ItemModel]:
-    # Config black not to format these block of codes
-    # fmt: off
     statement = (
         select(ItemModel)
-        .where(ItemModel.category_id == category_id)
+        .where(
+            ItemModel.category_id == category_id,
+        )
         .offset(offset)
         .limit(limit)
     )
-    # fmt: on
     result = await session.execute(statement)
     items = result.scalars().all()
     return items
 
 
-async def create_item(session: AsyncSession, name: str, description: str, category_id: int, user_id: int) -> ItemModel:
+async def create_item(
+    session: AsyncSession,
+    name: str,
+    description: str,
+    category_id: int,
+    user_id: int,
+) -> ItemModel:
     item = ItemModel(
         name=name,
         description=description,
@@ -42,6 +59,7 @@ async def create_item(session: AsyncSession, name: str, description: str, catego
     )
     session.add(item)
     await session.commit()
+    await session.refresh(item)
     return item
 
 

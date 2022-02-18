@@ -1,7 +1,9 @@
-from pydantic import BaseModel, constr, EmailStr, validator
+from pydantic import EmailStr, constr, validator
+
+from main.schemas.base import BaseSchema
 
 
-class UserAuthenticationRequestSchema(BaseModel):
+class UserAuthenticationRequestSchema(BaseSchema):
     email: EmailStr
     password: constr(min_length=6, max_length=50)
 
