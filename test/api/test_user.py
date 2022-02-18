@@ -9,7 +9,7 @@ INVALID_EMAIL_CASES = [
             "email": "minh @gmail.com",
             "password": "String123",
         },
-        {"error_message": "value is not a valid email address"},
+        {"error_message": "email: value is not a valid email address"},
     ),
     # Email does not contain '@'
     (
@@ -17,7 +17,7 @@ INVALID_EMAIL_CASES = [
             "email": "minhgmail.com",
             "password": "String123",
         },
-        {"error_message": "value is not a valid email address"},
+        {"error_message": "email: value is not a valid email address"},
     ),
     # Email does not contain .label
     (
@@ -25,7 +25,7 @@ INVALID_EMAIL_CASES = [
             "email": "minh@gmail",
             "password": "String123",
         },
-        {"error_message": "value is not a valid email address"},
+        {"error_message": "email: value is not a valid email address"},
     ),
     # Email has more than 1 '@'
     (
@@ -33,7 +33,7 @@ INVALID_EMAIL_CASES = [
             "email": "min@h@gmail",
             "password": "String123",
         },
-        {"error_message": "value is not a valid email address"},
+        {"error_message": "email: value is not a valid email address"},
     ),
 ]
 
@@ -45,7 +45,7 @@ INVALID_PASSWORD_CASES = [
             "password": "Stringtext",
         },
         {
-            "error_message": "Password must have at least 6 characters, "
+            "error_message": "password: Password must have at least 6 characters, "
             "including at least one lowercase letter, "
             "one uppercase letter, one digit."
         },
@@ -57,7 +57,7 @@ INVALID_PASSWORD_CASES = [
             "password": "STRING123",
         },
         {
-            "error_message": "Password must have at least 6 characters, "
+            "error_message": "password: Password must have at least 6 characters, "
             "including at least one lowercase letter, "
             "one uppercase letter, one digit."
         },
@@ -69,7 +69,7 @@ INVALID_PASSWORD_CASES = [
             "password": "string123",
         },
         {
-            "error_message": "Password must have at least 6 characters, "
+            "error_message": "password: Password must have at least 6 characters, "
             "including at least one lowercase letter, "
             "one uppercase letter, one digit."
         },
@@ -80,7 +80,7 @@ INVALID_PASSWORD_CASES = [
             "email": "minh@gmail.com",
             "password": "Strin",
         },
-        {"error_message": "ensure this value has at least 6 characters"},
+        {"error_message": "password: ensure this value has at least 6 characters"},
     ),
     # Password length is longer than 50 characters
     (
@@ -88,7 +88,7 @@ INVALID_PASSWORD_CASES = [
             "email": "minh@gmail.com",
             "password": "String123" + "x" * 50,
         },
-        {"error_message": "ensure this value has at most 50 characters"},
+        {"error_message": "password: ensure this value has at most 50 characters"},
     ),
     # Password length is 51 characters
     (
@@ -96,7 +96,7 @@ INVALID_PASSWORD_CASES = [
             "email": "minh@gmail.com",
             "password": "String123" + "x" * 42,
         },
-        {"error_message": "ensure this value has at most 50 characters"},
+        {"error_message": "password: ensure this value has at most 50 characters"},
     ),
 ]
 
@@ -110,8 +110,7 @@ async def test_fail_to_register_user_with_invalid_email(
     user_credentials: dict,
     expected_json_response: dict,
 ):
-    user_credentials.update({"full_name": "tester"})
-    response = await client.post("/users", json=user_credentials)
+    response = await client.post("/users", json={**user_credentials, "full_name": "tester"})
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.json() == expected_json_response
 
@@ -126,7 +125,7 @@ async def test_fail_to_register_user_with_invalid_email(
                 "password": "String123",
                 "full_name": "Hoang Minh" + "h" * 50,
             },
-            {"error_message": "ensure this value has at most 50 characters"},
+            {"error_message": "full_name: ensure this value has at most 50 characters"},
         ),
         # Full_name length is 51 characters
         (
@@ -135,7 +134,7 @@ async def test_fail_to_register_user_with_invalid_email(
                 "password": "String123",
                 "full_name": "H" * 51,
             },
-            {"error_message": "ensure this value has at most 50 characters"},
+            {"error_message": "full_name: ensure this value has at most 50 characters"},
         ),
         # Full_name length is less than 1 character
         (
@@ -144,7 +143,7 @@ async def test_fail_to_register_user_with_invalid_email(
                 "password": "String123",
                 "full_name": "",
             },
-            {"error_message": "ensure this value has at least 1 characters"},
+            {"error_message": "full_name: ensure this value has at least 1 characters"},
         ),
     ],
 )
@@ -167,8 +166,7 @@ async def test_fail_to_register_user_with_invalid_password(
     user_credentials: dict,
     expected_json_response: dict,
 ):
-    user_credentials.update({"full_name": "tester"})
-    response = await client.post("/users", json=user_credentials)
+    response = await client.post("/users", json={**user_credentials, "full_name": "tester"})
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.json() == expected_json_response
 
