@@ -8,6 +8,7 @@ from main.api.dependencies.auth import require_authenticated_user, require_owner
 from main.api.dependencies.category import require_category
 from main.api.dependencies.database import get_database_session
 from main.api.exception import BadRequestException
+from main.models.category import CategoryModel
 from main.models.user import UserModel
 from main.schemas.category import (
     CategoryBatchResponseSchema,
@@ -19,7 +20,7 @@ from main.services import category as category_service
 router = APIRouter()
 
 
-@router.get("/", response_model=List[CategoryBatchResponseSchema], status_code=status.HTTP_200_OK)
+@router.get("", response_model=List[CategoryBatchResponseSchema], status_code=status.HTTP_200_OK)
 async def get_all_categories(session: AsyncSession = Depends(get_database_session)):
     categories = await category_service.get_categories(session)
     return categories
@@ -30,7 +31,7 @@ async def get_single_category(category: CategoryResponseSchema = Depends(require
     return category
 
 
-@router.post("/")
+@router.post("")
 async def create_category(
     create_category_data: CategoryCreationRequestSchema,
     session: AsyncSession = Depends(get_database_session),
@@ -38,7 +39,7 @@ async def create_category(
 ):
     category = await category_service.get_category_by_name(session, create_category_data.name)
     if category:
-        raise BadRequestException("Category name already exists")
+        raise BadRequestException("Category already exists")
     await category_service.create_category(
         session=session,
         name=create_category_data.name,
@@ -49,6 +50,9 @@ async def create_category(
 
 
 @router.delete("/{category_id}", dependencies=[Depends(require_ownership(require_category))])
-async def delete_category(category_id, session: AsyncSession = Depends(get_database_session)):
-    await category_service.delete_category(session, category_id)
+async def delete_category(
+    category: CategoryModel = Depends(require_category),
+    session: AsyncSession = Depends(get_database_session),
+):
+    await category_service.delete_category(session=session, category_id=category.id)
     return JSONResponse(content={}, status_code=status.HTTP_200_OK)
