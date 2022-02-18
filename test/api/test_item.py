@@ -215,10 +215,11 @@ async def test_get_items_successfully(
     expected_json_response_list_length: dict,
 ):
     response = await client.get(f"/categories/1/items?page={page}&items_per_page={items_per_page}")
+    items_page = response.json()
     assert response.status_code == status.HTTP_200_OK
-    assert response.json().get("total_number_of_items") == 30
-    assert response.json().get("items_per_page") == items_per_page
-    assert len(response.json().get("items")) == expected_json_response_list_length
+    assert items_page["total_number_of_items"] == 30
+    assert items_page["items_per_page"] == items_per_page
+    assert len(items_page["items"]) == expected_json_response_list_length
 
 
 async def test_get_items_successfully_without_query_parameters(client: AsyncClient, list_items_creation: None):
