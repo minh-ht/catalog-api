@@ -187,7 +187,7 @@ async def test_create_item_successfully(
 )
 async def test_fail_get_items_with_invalid_query_parameters(
     client: AsyncClient,
-    many_items_creation: None,
+    list_items_creation: None,
     page: int,
     items_per_page: int,
     expected_json_response: dict,
@@ -209,7 +209,7 @@ async def test_fail_get_items_with_invalid_query_parameters(
 )
 async def test_get_items_successfully(
     client: AsyncClient,
-    many_items_creation: None,
+    list_items_creation: None,
     page: int,
     items_per_page: int,
     expected_json_response_list_length: dict,
@@ -219,7 +219,7 @@ async def test_get_items_successfully(
     assert len(response.json()) == expected_json_response_list_length
 
 
-async def test_get_items_successfully_without_query_parameters(client: AsyncClient, many_items_creation: None):
+async def test_get_items_successfully_without_query_parameters(client: AsyncClient, list_items_creation: None):
     response = await client.get("/categories/1/items")
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()) == 20

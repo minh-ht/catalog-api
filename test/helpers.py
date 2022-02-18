@@ -61,7 +61,7 @@ async def item_creation(
 
 
 @pytest.fixture
-async def many_items_creation(
+async def list_items_creation(
     client: AsyncClient,
     access_token: str,
     category_creation,
