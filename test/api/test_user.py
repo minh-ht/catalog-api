@@ -110,9 +110,7 @@ async def test_fail_to_register_user_with_invalid_email(
     user_credentials: dict,
     expected_json_response: dict,
 ):
-    user_credentials_copy = dict(user_credentials)
-    user_credentials_copy.update({"full_name": "tester"})
-    response = await client.post("/users", json=user_credentials_copy)
+    response = await client.post("/users", json={**user_credentials, "full_name": "tester"})
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.json() == expected_json_response
 
@@ -168,9 +166,7 @@ async def test_fail_to_register_user_with_invalid_password(
     user_credentials: dict,
     expected_json_response: dict,
 ):
-    user_credentials_copy = dict(user_credentials)
-    user_credentials_copy.update({"full_name": "tester"})
-    response = await client.post("/users", json=user_credentials_copy)
+    response = await client.post("/users", json={**user_credentials, "full_name": "tester"})
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.json() == expected_json_response
 

@@ -224,8 +224,10 @@ async def test_get_items_successfully(
 
 async def test_get_items_successfully_without_query_parameters(client: AsyncClient, list_items_creation: None):
     response = await client.get("/categories/1/items")
+    items_page = response.json()
     assert response.status_code == status.HTTP_200_OK
-    assert len(response.json().get("items")) == 20
+    assert len(items_page["items"]) == 20
+    assert items_page["items_per_page"] == 20
 
 
 @pytest.mark.parametrize(
