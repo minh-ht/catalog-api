@@ -49,9 +49,9 @@ async def create_category(
     return JSONResponse(content={"id": category.id}, status_code=status.HTTP_201_CREATED)
 
 
-@router.delete("/{category_id}", dependencies=[Depends(require_ownership(require_category))])
+@router.delete("/{category_id}")
 async def delete_category(
-    category: CategoryModel = Depends(require_category),
+    category: CategoryModel = Depends(require_ownership(require_category)),
     session: AsyncSession = Depends(get_database_session),
 ):
     await category_service.delete_category(session=session, category_id=category.id)

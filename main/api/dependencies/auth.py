@@ -42,8 +42,9 @@ def require_ownership(require_resource_dependency: Callable) -> Callable:
     def verify_ownership(
         user: UserModel = Depends(require_authenticated_user),
         resource: Union[CategoryModel, ItemModel] = Depends(require_resource_dependency),
-    ) -> None:
+    ) -> Union[CategoryModel, ItemModel]:
         if resource.user_id != user.id:
             raise ForbiddenException("User does not have permission to perform this action")
+        return resource
 
     return verify_ownership

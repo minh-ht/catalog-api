@@ -71,19 +71,19 @@ async def get_multiples_items(
     return items_batch_response
 
 
-@router.put("/{item_id}", dependencies=[Depends(require_ownership(require_item))])
+@router.put("/{item_id}")
 async def update_item(
     item_update_data: ItemUpdateRequestSchema,
-    item: ItemModel = Depends(require_item),
+    item: ItemModel = Depends(require_ownership(require_item)),
     session: AsyncSession = Depends(get_database_session),
 ):
     await item_service.update_item(session, item.id, item_update_data.description)
     return JSONResponse(content={}, status_code=status.HTTP_200_OK)
 
 
-@router.delete("/{item_id}", dependencies=[Depends(require_ownership(require_item))])
+@router.delete("/{item_id}")
 async def delete_item(
-    item: ItemModel = Depends(require_item),
+    item: ItemModel = Depends(require_ownership(require_item)),
     session: AsyncSession = Depends(get_database_session),
 ):
     await item_service.delete_item(session=session, item_id=item.id)
