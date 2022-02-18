@@ -17,7 +17,7 @@ from main.schemas.category import (
 )
 from main.services import category as category_service
 
-router = APIRouter(prefix="/categories", tags=["categories"])
+router = APIRouter()
 
 
 @router.get("", response_model=Dict[str, Union[int, List[CategoryBatchResponseSchema]]], status_code=status.HTTP_200_OK)

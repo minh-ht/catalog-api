@@ -13,7 +13,7 @@ from main.services.auth import (
 )
 from main.services.user import create_user, get_user_by_email
 
-router = APIRouter(prefix="/users", tags=["users"])
+router = APIRouter()
 
 
 @router.post("/")

@@ -19,7 +19,7 @@ from main.schemas.item import (
 )
 from main.services import item as item_service
 
-router = APIRouter(prefix="/categories/{category_id}/items", tags=["items"])
+router = APIRouter()
 
 
 @router.post("")
