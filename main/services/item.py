@@ -18,7 +18,7 @@ async def get_item_by_name(session: AsyncSession, name: str) -> Optional[ItemMod
     return item
 
 
-async def get_total_number_of_items_from_category(session: AsyncSession, category_id: int) -> int:
+async def get_total_number_of_items_of_category(session: AsyncSession, category_id: int) -> int:
     statement = (
         select(func.count())
         .select_from(

@@ -62,7 +62,7 @@ async def get_multiples_items(
         limit=items_per_page,
         offset=offset,
     )
-    total_number_of_items = await item_service.get_total_number_of_items_from_category(session, category.id)
+    total_number_of_items = await item_service.get_total_number_of_items_of_category(session, category.id)
     return ItemBatchResponseSchema(
         total_number_of_items=total_number_of_items,
         items_per_page=items_per_page,
