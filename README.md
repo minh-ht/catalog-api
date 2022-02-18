@@ -1,6 +1,8 @@
 # PROJECT CATALOG
 
-GOT IT training program final project for backend intern. This application is a collection of APIs allow users to register, login, create and view categories and items. This project is built with FastAPI framework, MySQL daatabase and SQLAlchemy.
+GOT IT training program final project for backend intern. This application is a collection of APIs allow users to
+register, login, create and view categories and items. This project is built with FastAPI framework, MySQL database and
+SQLAlchemy.
 
 ## Prerequisites
 
@@ -45,7 +47,8 @@ To install all the required libraries for this project, run this command:
 <details>
   <summary>Click to expand!</summary>
 
-You might need to manually create MySQL databases for related environment: local, production and test (We may consider setting up migration in the future). To create a database using MySQL, run this command in the terminal:
+You might need to manually create MySQL databases for related environment: local, production and test (We may consider
+setting up migration in the future). To create a database using MySQL, run this command in the terminal:
 
 ```
 $ mysql -u <username> -p <password>
