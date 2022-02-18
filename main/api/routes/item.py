@@ -61,12 +61,12 @@ async def get_multiples_items(
         offset=offset,
     )
     total_number_of_items = await item_service.get_total_number_of_items_from_category(session, category.id)
-    response = ItemBatchResponseSchema(
+    items_batch_response = ItemBatchResponseSchema(
         total_number_of_items=total_number_of_items,
         items_per_page=items_per_page,
         items=items,
     )
-    return response
+    return items_batch_response
 
 
 @router.put("/{item_id}", dependencies=[Depends(require_ownership(require_item))])
