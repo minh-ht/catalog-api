@@ -109,4 +109,6 @@ $ pytest
 
 </details>
 
-_This project is licensed under the terms of the MIT license_ (LICENSE)
+# License
+
+_This project is licensed under the terms of the MIT license_ ([LICENSE](LICENSE))
